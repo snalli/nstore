@@ -229,9 +229,9 @@ namespace storage {
 }
 
 int main(int argc, char **argv) {
-  const char* path = "/mnt/pmfs/n-store/zfile";
+  const char* path = "/dev/shm/zfile";
 
-  size_t pmp_size = 1UL * 1024 * 1024 * 1024;
+  size_t pmp_size = 3UL * 1024 * 1024 * 1024;
   if ((storage::pmp = storage::pmemalloc_init(path, pmp_size)) == NULL)
     std::cout << "pmemalloc_init on :" << path << std::endl;
 
@@ -241,6 +241,11 @@ int main(int argc, char **argv) {
   storage::config state;
   parse_arguments(argc, argv, state);
   state.sp = storage::sp;
+
+  gettimeofday(&glb_time, NULL);
+  glb_tv_sec  = glb_time.tv_sec;
+  glb_tv_usec = glb_time.tv_usec;
+  glb_start_time = glb_tv_sec * 1000000 + glb_tv_usec;
 
   storage::coordinator cc(state);
   cc.eval(state);

@@ -60,7 +60,7 @@ class coordinator {
 
     for (unsigned int i = 0; i < num_executors; i++) {
       database* db = new database(conf, sp, i);
-      partitions[i] = get_benchmark(conf, i, db);
+      PM_EQU(partitions[i], get_benchmark(conf, i, db));
     }
 
     for (unsigned int i = 0; i < num_executors; i++)

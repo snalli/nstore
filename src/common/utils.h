@@ -6,6 +6,24 @@
 
 #include "config.h"
 
+#define TSTR_SZ         128
+#define MAX_TBUF_SZ     1024*1024*1024  /* bytes */
+
+extern __thread struct timeval mtm_time;
+extern __thread int mtm_tid;
+
+extern __thread char tstr[TSTR_SZ];
+extern __thread unsigned long long tsz;
+extern __thread unsigned long long tbuf_ptr;
+
+extern char *tbuf;
+extern unsigned long long tbuf_sz;
+extern pthread_spinlock_t tbuf_lock;
+extern int mtm_enable_trace;
+extern int mtm_debug_buffer;
+extern struct timeval glb_time;
+extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
+
 namespace storage {
 
 class schema;

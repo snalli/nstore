@@ -18,6 +18,7 @@
 
 #include <mutex>
 #include "utils.h"
+#include "pm_instr.h"
 
 namespace storage {
 

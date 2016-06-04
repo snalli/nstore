@@ -12,19 +12,19 @@ class database {
  public:
   database(config conf, struct static_info* sp, unsigned int tid)
       : tables(NULL),
-        log(NULL),
-        dirs(NULL) {
-
-    sp->itr++;
+        log(NULL)  {
+    // Line 16 is now Line 17. And Line 17 is not blank now. So everything is same as b4.
+    PM_EQU(dirs, NULL);
+    PM_EQU(sp->itr, sp->itr + 1);
 
     // TABLES
     plist<table*>* _tables = new plist<table*>(&sp->ptrs[get_next_pp()],
                                                &sp->ptrs[get_next_pp()]);
     pmemalloc_activate(_tables);
-    tables = _tables;
+    PM_EQU(tables, _tables);
 
     // LOG
-    log = new plist<char*>(&sp->ptrs[get_next_pp()], &sp->ptrs[get_next_pp()]);
+    PM_EQU(log, new plist<char*>(&sp->ptrs[get_next_pp()], &sp->ptrs[get_next_pp()]));
     pmemalloc_activate(log);
 
     // DIRS

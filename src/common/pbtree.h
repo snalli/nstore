@@ -210,8 +210,8 @@ class btree {
 
     /// Delayed initialisation of constructed node
     inline void initialize(const unsigned short l) {
-      level = l;
-      slotuse = 0;
+      PM_EQU(level, l); // Don't worry if this is not PM write. It will be filtered by eliza.
+      PM_EQU(slotuse, 0);
     }
 
     /// True if this is a leaf node
@@ -1352,7 +1352,7 @@ class btree {
       pmemalloc_activate(n);
 
     n->initialize(level);
-    m_stats->innernodes++;
+    PM_EQU(m_stats->innernodes, m_stats->innernodes);
     return n;
   }
 
@@ -2004,7 +2004,7 @@ class btree {
     key_type newkey = key_type();
 
     if ((*m_root) == NULL) {
-      (*m_root) = m_headleaf = m_tailleaf = allocate_leaf();
+      PM_EQU((*m_root), m_headleaf);PM_EQU(m_headleaf, m_tailleaf);PM_EQU(m_tailleaf, allocate_leaf());
     }
 
     std::pair<iterator, bool> r = insert_descend((*m_root), key, value, &newkey,
@@ -2012,19 +2012,19 @@ class btree {
 
     if (newchild) {
       inner_node *newroot = allocate_inner((*m_root)->level + 1);
-      newroot->slotkey[0] = newkey;
+      PM_EQU(newroot->slotkey[0], newkey);
 
-      newroot->childid[0] = (*m_root);
-      newroot->childid[1] = newchild;
+      PM_EQU(newroot->childid[0], (*m_root));
+      PM_EQU(newroot->childid[1], newchild);
 
-      newroot->slotuse = 1;
+      PM_EQU(newroot->slotuse, 1);
 
-      (*m_root) = newroot;
+      PM_EQU((*m_root), newroot);
     }
 
     // increment itemcount if the item was inserted
     if (r.second)
-      ++m_stats->itemcount;
+      PM_EQU(m_stats->itemcount, m_stats->itemcount + 1);
 
 #ifdef BTREE_DEBUG
     if (debug) print(std::cout);
@@ -2095,13 +2095,13 @@ class btree {
             inner_node *splitinner = static_cast<inner_node*>(*splitnode);
 
             // move the split key and it's datum into the left node
-            inner->slotkey[inner->slotuse] = *splitkey;
-            inner->childid[inner->slotuse + 1] = splitinner->childid[0];
-            inner->slotuse++;
+            PM_EQU(inner->slotkey[inner->slotuse], *splitkey);
+            PM_EQU(inner->childid[inner->slotuse + 1], splitinner->childid[0]);
+            PM_EQU(inner->slotuse, inner->slotuse + 1);
 
             // set new split key and move corresponding datum into right node
-            splitinner->childid[0] = newchild;
-            *splitkey = newkey;
+            PM_EQU(splitinner->childid[0], newchild);
+            PM_EQU(*splitkey, newkey);
 
             return r;
           } else if (slot >= inner->slotuse + 1) {
@@ -2125,9 +2125,9 @@ class btree {
                            inner->childid + inner->slotuse + 1,
                            inner->childid + inner->slotuse + 2);
 
-        inner->slotkey[slot] = newkey;
-        inner->childid[slot + 1] = newchild;
-        inner->slotuse++;
+        PM_EQU(inner->slotkey[slot], newkey);
+        PM_EQU(inner->childid[slot + 1], newchild);
+        PM_EQU(inner->slotuse, inner->slotuse + 1);
       }
 
       return r;
@@ -2160,10 +2160,10 @@ class btree {
       data_copy_backward(leaf->slotdata + slot, leaf->slotdata + leaf->slotuse,
                          leaf->slotdata + leaf->slotuse + 1);
 
-      leaf->slotkey[slot] = key;
+      PM_EQU(leaf->slotkey[slot], key);
       if (!used_as_set)
-        leaf->slotdata[slot] = value;
-      leaf->slotuse++;
+        PM_EQU(leaf->slotdata[slot], value);
+      PM_EQU(leaf->slotuse, leaf->slotuse + 1);
 
       if (splitnode && leaf != *splitnode && slot == leaf->slotuse - 1) {
         // special case: the node was split, and the insert is at the

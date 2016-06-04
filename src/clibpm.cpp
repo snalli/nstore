@@ -1,5 +1,13 @@
 // clibpm
 
+#include <execinfo.h>
+#include <sys/time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <pthread.h>
+
 #include "clibpm.h"
 
 std::mutex pmp_mutex;
@@ -7,24 +15,41 @@ std::mutex pmp_mutex;
 // Global new and delete
 
 void* operator new(size_t sz) {
-  //pmp_mutex.lock();
+  pmp_mutex.lock();
   void* ret = storage::pmemalloc_reserve(sz);
-  //pmp_mutex.unlock();
+  pmp_mutex.unlock();
   return ret;
 }
 
 void operator delete(void *p) throw () {
-  //pmp_mutex.lock();
+  pmp_mutex.lock();
   storage::pmemalloc_free(p);
-  //pmp_mutex.unlock();
+  pmp_mutex.unlock();
 }
+
+/* Tracing infrastructure */
+__thread struct timeval mtm_time;
+__thread int mtm_tid = -1;
+
+__thread char tstr[TSTR_SZ];
+__thread unsigned long long tsz = 0;
+__thread unsigned long long tbuf_ptr = 0;
+
+/* Can we make these thread local ? */
+char *tbuf;
+pthread_spinlock_t tbuf_lock;
+unsigned long long tbuf_sz;
+int mtm_enable_trace = 0;
+int mtm_debug_buffer = 1;
+struct timeval glb_time;
+unsigned long long glb_tv_sec = 0, glb_tv_usec = 0, glb_start_time = 0;
 
 namespace storage {
 
 unsigned int get_next_pp() {
   pmp_mutex.lock();
   unsigned int ret = sp->itr;
-  sp->itr++;
+  PM_EQU(sp->itr, sp->itr + 1);
   pmp_mutex.unlock();
   return ret;
 }

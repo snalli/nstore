@@ -30,9 +30,9 @@ class plist {
   }
 
   plist(void** _head, void** _tail) {
-    head = (struct node**) _head;
-    tail = (struct node**) _tail;
-    activate = true;
+    PM_EQU(head, (struct node**) _head);
+    PM_EQU(tail, (struct node**) _tail);
+    PM_EQU(activate, true);
   }
 
   plist(void** _head, void** _tail, bool _activate) {
