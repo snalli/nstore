@@ -13,32 +13,32 @@ namespace storage {
 
 class engine {
  public:
-  engine()
-      : etype(engine_type::WAL),
-        de(NULL) {
+  engine() {
+      PM_EQU(etype, engine_type::WAL);
+      PM_EQU(de, NULL);
   }
 
-  engine(const config& conf, unsigned int tid, database* db, bool read_only)
-      : etype(conf.etype) {
+  engine(const config& conf, unsigned int tid, database* db, bool read_only) {
+      PM_EQU(etype, conf.etype);
 
     switch (conf.etype) {
       case engine_type::WAL:
-        de = new wal_engine(conf, db, read_only, tid);
+        PM_EQU(de, new wal_engine(conf, db, read_only, tid));
         break;
       case engine_type::SP:
-        de = new sp_engine(conf, db, read_only, tid);
+        PM_EQU(de, new sp_engine(conf, db, read_only, tid));
         break;
       case engine_type::LSM:
-        de = new lsm_engine(conf, db, read_only, tid);
+        PM_EQU(de, new lsm_engine(conf, db, read_only, tid));
         break;
       case engine_type::OPT_WAL:
-        de = new opt_wal_engine(conf, db, read_only, tid);
+        PM_EQU(de, new opt_wal_engine(conf, db, read_only, tid));
         break;
       case engine_type::OPT_SP:
-        de = new opt_sp_engine(conf, db, read_only, tid);
+        PM_EQU(de, new opt_sp_engine(conf, db, read_only, tid));
         break;
       case engine_type::OPT_LSM:
-        de = new opt_lsm_engine(conf, db, read_only, tid);
+        PM_EQU(de, new opt_lsm_engine(conf, db, read_only, tid));
         break;
       default:
         std::cout << "Unknown engine type :: " << etype << std::endl;
@@ -49,7 +49,7 @@ class engine {
   }
 
   virtual ~engine() {
-    delete de;
+    delete de; // TODO : PM_WRITE ??
   }
 
   virtual std::string select(const statement& st) {

@@ -13,10 +13,10 @@ class benchmark {
  public:
   benchmark(unsigned int _tid, database* _db, timer* _tm,
             struct static_info* _sp) {
-    tid = _tid;
-    tm = _tm;
-    db = _db;
-    sp = _sp;
+    PM_EQU(tid, _tid);
+    PM_EQU(tm, _tm);
+    PM_EQU(db, _db);
+    PM_EQU(sp, _sp);
   }
 
   virtual void load() = 0;

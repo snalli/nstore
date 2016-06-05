@@ -14,11 +14,11 @@ namespace storage {
 class record {
  public:
 
-  record(schema* _sptr)
-      : sptr(_sptr),
-        data(NULL),
-        data_len(_sptr->ser_len) {
-    data = new char[data_len];
+  record(schema* _sptr) {
+    PM_EQU(sptr,_sptr);
+    PM_EQU(data, NULL);
+    PM_EQU(data_len, _sptr->ser_len);
+    PM_EQU(data, new char[data_len]);
   }
 
   ~record() {
@@ -99,7 +99,7 @@ class record {
       case field_type::INTEGER:
       case field_type::DOUBLE:
       case field_type::VARCHAR:
-        memcpy(&(data[offset]), &(rec_ptr->data[offset]), len);
+        PM_MEMCPY(&(data[offset]), &(rec_ptr->data[offset]), len);
         break;
 
       default:
@@ -110,24 +110,24 @@ class record {
 
   void set_int(const int field_id, int ival) {
     //assert(sptr->columns[field_id].type == field_type::INTEGER);
-    memcpy(&(data[sptr->columns[field_id].offset]), &ival, sizeof(int));
+    PM_MEMCPY(&(data[sptr->columns[field_id].offset]), &ival, sizeof(int));
   }
 
   void set_double(const int field_id, double dval) {
     //assert(sptr->columns[field_id].type == field_type::DOUBLE);
-    memcpy(&(data[sptr->columns[field_id].offset]), &dval, sizeof(double));
+    PM_MEMCPY(&(data[sptr->columns[field_id].offset]), &dval, sizeof(double));
   }
 
   void set_varchar(const int field_id, std::string vc_str) {
     //assert(sptr->columns[field_id].type == field_type::VARCHAR);
     char* vc = new char[vc_str.size() + 1];
-    strcpy(vc, vc_str.c_str());
-    memcpy(&(data[sptr->columns[field_id].offset]), &vc, sizeof(void*));
+    PM_STRCPY(vc, vc_str.c_str());
+    PM_MEMCPY(&(data[sptr->columns[field_id].offset]), &vc, sizeof(void*));
   }
 
   void set_pointer(const int field_id, void* pval) {
     //assert(sptr->columns[field_id].type == field_type::VARCHAR);
-    memcpy(&(data[sptr->columns[field_id].offset]), &pval, sizeof(void*));
+    PM_MEMCPY(&(data[sptr->columns[field_id].offset]), &pval, sizeof(void*));
   }
 
   void persist_data() {

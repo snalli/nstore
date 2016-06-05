@@ -53,11 +53,11 @@ class plist {
   struct node* init(V val) {
     struct node* np = new struct node;
 
-    np->next = (*head);
-    np->val = val;
+    PM_EQU(np->next, (*head));
+    PM_EQU(np->val, val);
 
-    (*head) = np;
-    (*tail) = np;
+    PM_EQU((*head), np);
+    PM_EQU((*tail), np);
 
     if (activate)
       pmemalloc_activate(np);
@@ -79,20 +79,20 @@ class plist {
     struct node* np = new struct node;
 
     // Link it in at the end of the list
-    np->val = val;
-    np->next = NULL;
+    PM_EQU(np->val, val);
+    PM_EQU(np->next, NULL);
 
     tailp = (*tail);
-    (*tail) = np;
+    PM_EQU((*tail), np);
 
     if (activate)
       pmemalloc_activate(np);
 
-    tailp->next = np;
+    PM_EQU(tailp->next, np);
     pmem_persist(&tailp->next, sizeof(*np), 0);
 
     index = _size;
-    _size++;
+    PM_EQU(_size, _size + 1);
     return index;
   }
 
@@ -212,8 +212,8 @@ class plist {
       delete prev;
     }
 
-    (*head) = NULL;
-    (*tail) = NULL;
+    PM_EQU((*head), NULL);
+    PM_EQU((*tail), NULL);
   }
 
   std::vector<V> get_data(void) {

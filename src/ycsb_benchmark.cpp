@@ -69,32 +69,32 @@ table* create_usertable(config& conf) {
 
 ycsb_benchmark::ycsb_benchmark(config _conf, unsigned int tid, database* _db,
                                timer* _tm, struct static_info* _sp)
-    : benchmark(tid, _db, _tm, _sp),
-      conf(_conf),
-      txn_id(0) {
+    : benchmark(tid, _db, _tm, _sp) {
+      PM_EQU(conf, _conf);
+      PM_EQU(txn_id, 0);
 
-  btype = benchmark_type::YCSB;
+  PM_EQU(btype, benchmark_type::YCSB);
 
   // Partition workload
-  num_keys = conf.num_keys / conf.num_executors;
-  num_txns = conf.num_txns / conf.num_executors;
+  PM_EQU(num_keys, conf.num_keys / conf.num_executors);
+  PM_EQU(num_txns, conf.num_txns / conf.num_executors);
 
   // Initialization mode
   if (sp->init == 0) {
     //cout << "Initialization Mode" << endl;
-    sp->ptrs[0] = _db;
+    PM_EQU(sp->ptrs[0], _db);
 
     table* usertable = create_usertable(conf);
     db->tables->push_back(usertable);
 
-    sp->init = 1;
+    PM_EQU(sp->init, 1);
   } else {
     //cout << "Recovery Mode " << endl;
     database* db = (database*) sp->ptrs[0];
     db->reset(conf, tid);
   }
 
-  user_table_schema = db->tables->at(USER_TABLE_ID)->sptr;
+  PM_EQU(user_table_schema, db->tables->at(USER_TABLE_ID)->sptr);
 
   if (conf.recovery) {
     num_txns = conf.num_txns;
@@ -131,7 +131,7 @@ void ycsb_benchmark::load() {
 
     if (txn_itr % conf.load_batch_size == 0) {
       ee->txn_end(true);
-      txn_id++;
+      PM_EQU(txn_id, txn_id + 1);
       ee->txn_begin();
     }
 
@@ -160,7 +160,7 @@ void ycsb_benchmark::do_update(engine* ee) {
 // UPDATE
   std::string updated_val(conf.ycsb_field_size, 'x');
   int zipf_dist_offset = txn_id * conf.ycsb_tuples_per_txn;
-  txn_id++;
+  PM_EQU(txn_id, txn_id + 1);
   int rc;
 
   TIMER(ee->txn_begin())
@@ -190,7 +190,7 @@ void ycsb_benchmark::do_read(engine* ee) {
 
 // SELECT
   int zipf_dist_offset = txn_id * conf.ycsb_tuples_per_txn;
-  txn_id++;
+  PM_EQU(txn_id, txn_id + 1);
   std::string empty;
   std::string rc;
 

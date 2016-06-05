@@ -554,11 +554,11 @@ void pmemalloc_free(void *abs_ptr_) {
     size_t first_sz = firstfree->size & ~PMEM_STATE_MASK;
     size_t last_sz = lastfree->size & ~PMEM_STATE_MASK;
     csize = first_sz + sz + last_sz;
-    firstfree->size = csize | PMEM_STATE_FREE;
+    PM_EQU(firstfree->size, csize | PMEM_STATE_FREE);
     pmem_persist(firstfree, sizeof(*firstfree), 0);
 
     next_clp = (struct clump *) ((uintptr_t) lastfree + last_sz);
-    next_clp->prevsize = csize;
+    PM_EQU(next_clp->prevsize, csize);
     pmem_persist(next_clp, sizeof(*next_clp), 0);
 
     prev_clp = firstfree;
@@ -569,11 +569,11 @@ void pmemalloc_free(void *abs_ptr_) {
 
     size_t first_sz = firstfree->size & ~PMEM_STATE_MASK;
     csize = first_sz + sz;
-    firstfree->size = csize | PMEM_STATE_FREE;
+    PM_EQU(firstfree->size, csize | PMEM_STATE_FREE);
     pmem_persist(firstfree, sizeof(*firstfree), 0);
 
     next_clp = lastfree;
-    next_clp->prevsize = csize;
+    PM_EQU(next_clp->prevsize, csize);
     pmem_persist(next_clp, sizeof(*next_clp), 0);
 
     prev_clp = firstfree;
@@ -585,11 +585,11 @@ void pmemalloc_free(void *abs_ptr_) {
     size_t last_sz = lastfree->size & ~PMEM_STATE_MASK;
 
     csize = sz + last_sz;
-    clp->size = csize | PMEM_STATE_FREE;
+    PM_EQU(clp->size, csize | PMEM_STATE_FREE);
     pmem_persist(clp, sizeof(*clp), 0);
 
     next_clp = (struct clump *) ((uintptr_t) lastfree + last_sz);
-    next_clp->prevsize = csize;
+    PM_EQU(next_clp->prevsize, csize);
     pmem_persist(next_clp, sizeof(*next_clp), 0);
 
     prev_clp = clp;
@@ -600,7 +600,7 @@ void pmemalloc_free(void *abs_ptr_) {
     DEBUG("******* C ");
 
     csize = sz;
-    clp->size = csize | PMEM_STATE_FREE;
+    PM_EQU(clp->size, csize | PMEM_STATE_FREE);
     pmem_persist(clp, sizeof(*clp), 0);
 
     //DEBUG("validate clump %p", REL_PTR(clp));

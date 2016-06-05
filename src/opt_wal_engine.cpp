@@ -8,13 +8,13 @@ opt_wal_engine::opt_wal_engine(const config& _conf, database* _db,
 bool _read_only,
                                unsigned int _tid)
     : conf(_conf),
-      db(_db),
-      tid(_tid) {
-
-  etype = engine_type::OPT_WAL;
-  read_only = _read_only;
-  pm_log = db->log;
-
+      db(_db)   {
+  PM_EQU(tid, _tid);			/* some of these writes to persistent heap */
+					/* aren't truly persistent, i.e. even if these writes */
+  PM_EQU(etype, engine_type::OPT_WAL);  /* don't make it to PM before a crash, its ok. Which means */
+  PM_EQU(read_only, _read_only);	/* that these writes aren't flushed-and-fenced. No fence means */
+  PM_EQU(pm_log, db->log); 		/* no epoch boundaries, which means really long epochs */
+					/* TODO : Time to get mark the flushes too, i guess ?! */
 }
 
 opt_wal_engine::~opt_wal_engine() {

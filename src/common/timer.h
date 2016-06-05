@@ -29,8 +29,8 @@ class timer {
 
   void end() {
     gettimeofday(&t2, NULL);
-    timersub(&t2, &t1, &diff);
-    timeradd(&diff, &total, &total);
+    timersub(&t2, &t1, &diff); // PM_WRITE ?? diff is the target
+    timeradd(&diff, &total, &total); // PM_WRITE ?? total is the target
   }
 
   void reset(){
