@@ -52,7 +52,7 @@ table* create_usertable(config& conf) {
 
   // PRIMARY INDEX
   for (int itr = 1; itr <= conf.ycsb_num_val_fields; itr++) {
-    cols[itr].enabled = 0;
+    PM_EQU(cols[itr].enabled, 0);
   }
 
   schema* user_table_index_schema = new schema(cols);

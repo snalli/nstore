@@ -442,15 +442,15 @@ void *pmemalloc_reserve(size_t size) {
            *  5. set new clump size, RESERVED
            *  6. persist existing clump
            */
-          newclp->size = leftover | PMEM_STATE_FREE;
-          newclp->prevsize = nsize;
+          PM_EQU(newclp->size, (leftover | PMEM_STATE_FREE));
+          PM_EQU(newclp->prevsize, nsize);
           pmem_persist(newclp, sizeof(*newclp), 0);
 
           next_clp = (struct clump *) ((uintptr_t) newclp + leftover);
-          next_clp->prevsize = leftover;
+          PM_EQU(next_clp->prevsize, leftover);
           pmem_persist(next_clp, sizeof(*next_clp), 0);
 
-          clp->size = nsize | PMEM_STATE_RESERVED;
+          PM_EQU(clp->size, (nsize | PMEM_STATE_RESERVED));
           pmem_persist(clp, sizeof(*clp), 0);
 
           //DEBUG("validate new clump %p", REL_PTR(newclp));
@@ -459,11 +459,11 @@ void *pmemalloc_reserve(size_t size) {
         } else {
           DEBUG("no split required");
 
-          clp->size = sz | PMEM_STATE_RESERVED;
+          PM_EQU(clp->size, (sz | PMEM_STATE_RESERVED));
           pmem_persist(clp, sizeof(*clp), 0);
 
           next_clp = (struct clump *) ((uintptr_t) clp + sz);
-          next_clp->prevsize = sz;
+          PM_EQU(next_clp->prevsize, sz);
           pmem_persist(next_clp, sizeof(*next_clp), 0);
 
           //DEBUG("validate orig clump %p", REL_PTR(clp));
@@ -506,7 +506,7 @@ void pmemalloc_activate_helper(void *abs_ptr) {
 
   pmem_persist(abs_ptr, clp->size - PMEM_CHUNK_SIZE, 0);
 
-  clp->size = sz | PMEM_STATE_ACTIVE;
+  PM_EQU(clp->size, (sz | PMEM_STATE_ACTIVE));
   pmem_persist(clp, sizeof(*clp), 0);
 }
 

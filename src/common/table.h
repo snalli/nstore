@@ -10,24 +10,24 @@ namespace storage {
 class table {
  public:
   table(const std::string& name_str, schema* _sptr, unsigned int _num_indices,
-        __attribute__((unused)) config& conf, struct static_info* sp)
-      : table_name(NULL),
-        sptr(_sptr),
-        max_tuple_size(_sptr->deser_len),
-        num_indices(_num_indices),
-        indices(NULL),
-        pm_data(NULL) {
+        __attribute__((unused)) config& conf, struct static_info* sp) {
+      PM_EQU(table_name, NULL);
+      PM_EQU(sptr, _sptr);
+      PM_EQU(max_tuple_size, _sptr->deser_len);
+      PM_EQU(num_indices, _num_indices);
+      PM_EQU(indices, NULL);
+      PM_EQU(pm_data, NULL);
 
     size_t len = name_str.size();
-    table_name = new char[len + 1];
-    memcpy(table_name, name_str.c_str(), len + 1);
+    PM_EQU(table_name, new char[len + 1]);
+    PM_MEMCPY(table_name, name_str.c_str(), len + 1);
     pmemalloc_activate(table_name);
 
-    pm_data = new plist<record*>(&sp->ptrs[get_next_pp()], &sp->ptrs[get_next_pp()]);
+    PM_EQU(pm_data, new plist<record*>(&sp->ptrs[get_next_pp()], &sp->ptrs[get_next_pp()]));
     pmemalloc_activate(pm_data);
 
-    indices = new plist<table_index*>(&sp->ptrs[get_next_pp()],
-                                      &sp->ptrs[get_next_pp()]);
+    PM_EQU(indices, new plist<table_index*>(&sp->ptrs[get_next_pp()],
+                                      &sp->ptrs[get_next_pp()]));
     pmemalloc_activate(indices);
 
   }
