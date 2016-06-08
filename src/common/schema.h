@@ -11,19 +11,19 @@ namespace storage {
 
 class schema {
  public:
-  schema(std::vector<field_info> _columns)
-      : columns(NULL),
-        ser_len(0),
-        deser_len(0){
+  schema(std::vector<field_info> _columns) {
+      PM_EQU((columns), (NULL));
+      PM_EQU((ser_len), (0));
+      PM_EQU((deser_len), (0));
 
     num_columns = _columns.size();
     columns = (field_info*) pmalloc(num_columns*(sizeof(field_info)));//new field_info[num_columns];
     unsigned int itr;
 
     for (itr = 0; itr < num_columns; itr++) {
-      columns[itr] = _columns[itr];
-      ser_len += columns[itr].ser_len;
-      deser_len += columns[itr].deser_len;
+      PM_EQU((columns[itr]), (_columns[itr]));
+      PM_EQU((ser_len), (ser_len + columns[itr].ser_len));
+      PM_EQU((deser_len), (deser_len + columns[itr].deser_len));
     }
 
     pmemalloc_activate(columns);
