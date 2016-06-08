@@ -25,20 +25,20 @@ class plist {
         activate(false) {
     head = (struct node**) pmalloc(sizeof(struct node*));//new (struct node*);
     tail = (struct node**) pmalloc(sizeof(struct node*));//new (struct node*);
-    (*head) = NULL;
-    (*tail) = NULL;
+    PM_EQU(((*head)), (NULL));
+    PM_EQU(((*tail)), (NULL));
   }
 
   plist(void** _head, void** _tail) {
-    head = (struct node**) _head;
-    tail = (struct node**) _tail;
-    activate = true;
+    PM_EQU((head), ((struct node**) _head));
+    PM_EQU((tail), ((struct node**) _tail));
+    PM_EQU((activate), (true));
   }
 
   plist(void** _head, void** _tail, bool _activate) {
-    head = (struct node**) _head;
-    tail = (struct node**) _tail;
-    activate = _activate;
+    PM_EQU((head), ((struct node**) _head));
+    PM_EQU((tail), ((struct node**) _tail));
+    PM_EQU((activate), (_activate));
   }
 
   ~plist() {
@@ -53,16 +53,16 @@ class plist {
   struct node* init(V val) {
     struct node* np = (struct node*) pmalloc(sizeof(struct node));//new struct node;
 
-    np->next = (*head);
-    np->val = val;
+    PM_EQU((np->next), ((*head)));
+    PM_EQU((np->val), (val));
 
-    (*head) = np;
-    (*tail) = np;
+    PM_EQU(((*head)), (np));
+    PM_EQU(((*tail)), (np));
 
     if (activate)
       pmemalloc_activate(np);
 
-    _size++;
+    PM_EQU((_size), (_size+1));
     return np;
   }
 
@@ -79,20 +79,20 @@ class plist {
     struct node* np = (struct node*) pmalloc(sizeof(struct node));// new struct node;
 
     // Link it in at the end of the list
-    np->val = val;
-    np->next = NULL;
+    PM_EQU((np->val), (val));
+    PM_EQU((np->next), (NULL));
 
     tailp = (*tail);
-    (*tail) = np;
+    PM_EQU(((*tail)), (np));
 
     if (activate)
       pmemalloc_activate(np);
 
-    tailp->next = np;
+    PM_EQU((tailp->next), (np));
     pmem_persist(&tailp->next, sizeof(*np), 0);
 
     index = _size;
-    _size++;
+    PM_EQU((_size), (_size+1));
     return index;
   }
 
@@ -144,11 +144,11 @@ class plist {
 
     while (np != NULL) {
       if (itr == index) {
-        np->val = val;
+        PM_EQU((np->val), (val));
         break;
       } else {
         itr++;
-        np = np->next;
+        PM_EQU((np), (np->next));
       }
     }
   }
@@ -167,18 +167,18 @@ class plist {
       return -1;
     } else {
       if (prev != NULL) {
-        prev->next = np->next;
+        PM_EQU((prev->next), (np->next));
         pmem_persist(&prev->next, sizeof(*np), 0);
       }
 
       // Update head and tail
       if (np == (*head)) {
-        (*head) = np->next;
+        PM_EQU(((*head)), (np->next));
       } else if (np == (*tail)) {
-        (*tail) = prev;
+        PM_EQU(((*tail)), (prev));
       }
 
-      _size--;
+      PM_EQU((_size), (_size-1));
     }
 
     delete np;
@@ -208,12 +208,12 @@ class plist {
 
     while (np) {
       prev = np;
-      np = np->next;
+      PM_EQU((np), (np->next));
       delete prev;
     }
 
-    (*head) = NULL;
-    (*tail) = NULL;
+    PM_EQU(((*head)), (NULL));
+    PM_EQU(((*tail)), (NULL));
   }
 
   std::vector<V> get_data(void) {
@@ -222,7 +222,7 @@ class plist {
 
     while (np) {
       data.push_back(np->val);
-      np = np->next;
+      PM_EQU((np), (np->next));
     }
 
     //printf("size : %lu \n", data.size());
