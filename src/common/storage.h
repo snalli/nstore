@@ -15,11 +15,11 @@ namespace storage {
 
 class storage {
  public:
-  storage()
-      : storage_file(NULL),
-        storage_file_fd(-1),
-        storage_offset(0),
-        max_tuple_size(0) {
+  storage() {
+       PM_EQU((storage_file), (NULL));
+       PM_EQU((storage_file_fd), (-1));
+       PM_EQU((storage_offset), (0));
+       PM_EQU((max_tuple_size), (0));
   }
 
   void configure(std::string _name, size_t _tuple_size, bool append) {
@@ -29,18 +29,18 @@ class storage {
     // file exists - read/update mode
     if (access(storage_file_name.c_str(), F_OK) != -1) {
       if (!append) {
-        storage_file = fopen(storage_file_name.c_str(), "r+");
+        PM_EQU((storage_file), (fopen(storage_file_name.c_str(), "r+")));
       } else {
-        storage_file = fopen(storage_file_name.c_str(), "a+");
+        PM_EQU((storage_file), (fopen(storage_file_name.c_str(), "a+")));
       }
     } else {
       // new file - write/update mode
-      storage_file = fopen(storage_file_name.c_str(), "w+");
+      PM_EQU((storage_file), (fopen(storage_file_name.c_str(), "w+")));
     }
 
     if (storage_file != NULL) {
-      storage_file_fd = fileno(storage_file);
-      storage_offset = 0;
+      PM_EQU((storage_file_fd), (fileno(storage_file)));
+      PM_EQU((storage_offset), (0));
 
       //fseek(storage_file, 0, SEEK_END);
       //size_t sz = ftell(storage_file);
@@ -71,7 +71,7 @@ class storage {
     }
 
     prev_offset = storage_offset;
-    storage_offset += ret;
+    PM_EQU((storage_offset), (storage_offset + ret));
     return prev_offset;
   }
 
