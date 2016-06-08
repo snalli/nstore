@@ -15,7 +15,7 @@ class database {
         log(NULL),
         dirs(NULL) {
 
-    sp->itr++;
+    PM_EQU((sp->itr), (sp->itr + 1));
 
     // TABLES
     plist<table*>* _tables = new ((plist<table*>*) pmalloc(sizeof(plist<table*>))) plist<table*>(&sp->ptrs[get_next_pp()],

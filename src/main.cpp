@@ -231,6 +231,20 @@ namespace storage {
 int main(int argc, char **argv) {
   const char* path = "/dev/shm/zfile";
 
+  gettimeofday(&glb_time, NULL);
+  glb_tv_sec  = glb_time.tv_sec;
+  glb_tv_usec = glb_time.tv_usec;
+  glb_start_time = glb_tv_sec * 1000000 + glb_tv_usec;
+
+  pthread_spin_init(&tbuf_lock, PTHREAD_PROCESS_SHARED);
+  /* tbuf = (char*)malloc(MAX_TBUF_SZ); To avoid interaction with M's hoard */
+  tbuf = (char*)mmap(0, MAX_TBUF_SZ, PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+  /* MAZ_TBUF_SZ influences how often we compress and hence the overall execution speed. */
+  if(!tbuf) {
+  	fprintf(m_err, "Failed to allocate trace buffer. Abort now.");
+	die();
+  }
+
   size_t pmp_size = PMSIZE;
   if ((storage::pmp = storage::pmemalloc_init(path, pmp_size)) == NULL)
     std::cout << "pmemalloc_init on :" << path << std::endl;

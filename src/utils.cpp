@@ -14,6 +14,23 @@
 #include "utils.h"
 #include "record.h"
 
+/* Tracing infrastructure */
+__thread struct timeval mtm_time;
+__thread int mtm_tid = -1;
+
+__thread char tstr[TSTR_SZ];
+__thread unsigned long long tsz = 0;
+__thread unsigned long long tbuf_ptr = 0;
+
+/* Can we make these thread local ? */
+char *tbuf;
+pthread_spinlock_t tbuf_lock;
+unsigned long long tbuf_sz;
+int mtm_enable_trace = 0;
+int mtm_debug_buffer = 1;
+struct timeval glb_time;
+unsigned long long glb_tv_sec = 0, glb_tv_usec = 0, glb_start_time = 0;
+
 namespace storage {
 
     // RAND GEN

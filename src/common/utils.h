@@ -3,7 +3,7 @@
 #include <vector>
 #include <ctime>
 #include <sstream>
-
+#include "pm_instr.h"
 #include "config.h"
 
 void* pmalloc(size_t sz);

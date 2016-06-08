@@ -210,8 +210,8 @@ class btree {
 
     /// Delayed initialisation of constructed node
     inline void initialize(const unsigned short l) {
-      level = l;
-      slotuse = 0;
+      PM_EQU((level), (l));
+      PM_EQU((slotuse), (0));
     }
 
     /// True if this is a leaf node
@@ -275,7 +275,7 @@ class btree {
     /// Set variables to initial values
     inline void initialize() {
       node::initialize(0);
-      prevleaf = nextleaf = NULL;
+      PM_EQU((prevleaf), (NULL));PM_EQU((nextleaf), (NULL));
     }
 
     /// True if the node's slots are full
@@ -1133,10 +1133,10 @@ class btree {
     static const unsigned short innerslots = btree_self::innerslotmax;
 
     /// Zero initialized
-    inline tree_stats()
-        : itemcount(0),
-          leaves(0),
-          innernodes(0) {
+    inline tree_stats() {
+        PM_EQU((itemcount), (0));
+        PM_EQU((leaves), (0));
+        PM_EQU((innernodes), (0));
     }
 
     /// Return the total number of nodes
@@ -1181,12 +1181,12 @@ class btree {
   /// Default constructor initializing an empty B+ tree with the standard key
   /// comparison function
   explicit inline btree(void** _root, const allocator_type &alloc =
-                            allocator_type())
-      : m_root((node**) _root),
-        m_headleaf(NULL),
-        m_tailleaf(NULL),
-        m_allocator(alloc) {
-    m_stats = new ((tree_stats*)pmalloc(sizeof(tree_stats))) tree_stats;
+                            allocator_type()) {
+      PM_EQU((m_root), (((node**) _root)));
+      PM_EQU((m_headleaf), (NULL));
+      PM_EQU((m_tailleaf), (NULL));
+      PM_EQU((m_allocator), (alloc));
+      PM_EQU((m_stats), (new ((tree_stats*)pmalloc(sizeof(tree_stats))) tree_stats));
 
     if (persist)
       pmemalloc_activate(m_stats);
@@ -1355,7 +1355,7 @@ class btree {
       pmemalloc_activate(n);
 
     n->initialize(level);
-    m_stats->innernodes++;
+    PM_EQU((m_stats->innernodes), (m_stats->innernodes+1));
     return n;
   }
 
@@ -2007,7 +2007,7 @@ class btree {
     key_type newkey = key_type();
 
     if ((*m_root) == NULL) {
-      (*m_root) = m_headleaf = m_tailleaf = allocate_leaf();
+      PM_EQU((m_tailleaf), (allocate_leaf()));PM_EQU((m_headleaf), (m_tailleaf));PM_EQU(((*m_root)), (m_headleaf));
     }
 
     std::pair<iterator, bool> r = insert_descend((*m_root), key, value, &newkey,
@@ -2015,19 +2015,19 @@ class btree {
 
     if (newchild) {
       inner_node *newroot = allocate_inner((*m_root)->level + 1);
-      newroot->slotkey[0] = newkey;
+      PM_EQU((newroot->slotkey[0]), (newkey));
 
-      newroot->childid[0] = (*m_root);
-      newroot->childid[1] = newchild;
+      PM_EQU((newroot->childid[0]), ((*m_root)));
+      PM_EQU((newroot->childid[1]), (newchild));
 
-      newroot->slotuse = 1;
+      PM_EQU((newroot->slotuse), (1));
 
-      (*m_root) = newroot;
+      PM_EQU(((*m_root)), (newroot));
     }
 
     // increment itemcount if the item was inserted
     if (r.second)
-      ++m_stats->itemcount;
+      PM_EQU((m_stats->itemcount), (m_stats->itemcount+1));
 
 #ifdef BTREE_DEBUG
     if (debug) print(std::cout);
@@ -2098,12 +2098,12 @@ class btree {
             inner_node *splitinner = static_cast<inner_node*>(*splitnode);
 
             // move the split key and it's datum into the left node
-            inner->slotkey[inner->slotuse] = *splitkey;
-            inner->childid[inner->slotuse + 1] = splitinner->childid[0];
-            inner->slotuse++;
+            PM_EQU((inner->slotkey[inner->slotuse]), (*splitkey));
+            PM_EQU((inner->childid[inner->slotuse + 1]), (splitinner->childid[0]));
+            PM_EQU((inner->slotuse), (inner->slotuse+1));
 
             // set new split key and move corresponding datum into right node
-            splitinner->childid[0] = newchild;
+            PM_EQU((splitinner->childid[0]), (newchild));
             *splitkey = newkey;
 
             return r;
@@ -2128,9 +2128,9 @@ class btree {
                            inner->childid + inner->slotuse + 1,
                            inner->childid + inner->slotuse + 2);
 
-        inner->slotkey[slot] = newkey;
-        inner->childid[slot + 1] = newchild;
-        inner->slotuse++;
+        PM_EQU((inner->slotkey[slot]), (newkey));
+        PM_EQU((inner->childid[slot + 1]), (newchild));
+        PM_EQU((inner->slotuse), (inner->slotuse+1));
       }
 
       return r;
@@ -2163,10 +2163,10 @@ class btree {
       data_copy_backward(leaf->slotdata + slot, leaf->slotdata + leaf->slotuse,
                          leaf->slotdata + leaf->slotuse + 1);
 
-      leaf->slotkey[slot] = key;
+      PM_EQU((leaf->slotkey[slot]), (key));
       if (!used_as_set)
-        leaf->slotdata[slot] = value;
-      leaf->slotuse++;
+        PM_EQU((leaf->slotdata[slot]), (value));
+      PM_EQU((leaf->slotuse), (leaf->slotuse+1));
 
       if (splitnode && leaf != *splitnode && slot == leaf->slotuse - 1) {
         // special case: the node was split, and the insert is at the
@@ -2190,14 +2190,14 @@ class btree {
 
     leaf_node *newleaf = allocate_leaf();
 
-    newleaf->slotuse = leaf->slotuse - mid;
+    PM_EQU((newleaf->slotuse), (leaf->slotuse - mid));
 
-    newleaf->nextleaf = leaf->nextleaf;
+    PM_EQU((newleaf->nextleaf), (leaf->nextleaf));
     if (newleaf->nextleaf == NULL) {
       BTREE_ASSERT(leaf == m_tailleaf);
-      m_tailleaf = newleaf;
+      PM_EQU((m_tailleaf), (newleaf));
     } else {
-      newleaf->nextleaf->prevleaf = newleaf;
+      PM_EQU((newleaf->nextleaf->prevleaf), (newleaf));
     }
 
     std::copy(leaf->slotkey + mid, leaf->slotkey + leaf->slotuse,
@@ -2205,9 +2205,9 @@ class btree {
     data_copy(leaf->slotdata + mid, leaf->slotdata + leaf->slotuse,
               newleaf->slotdata);
 
-    leaf->slotuse = mid;
-    leaf->nextleaf = newleaf;
-    newleaf->prevleaf = leaf;
+    PM_EQU((leaf->slotuse), (mid));
+    PM_EQU((leaf->nextleaf), (newleaf));
+    PM_EQU((newleaf->prevleaf), (leaf));
 
     *_newkey = leaf->slotkey[leaf->slotuse - 1];
     *_newleaf = newleaf;
@@ -2237,14 +2237,14 @@ class btree {
 
     inner_node *newinner = allocate_inner(inner->level);
 
-    newinner->slotuse = inner->slotuse - (mid + 1);
+    PM_EQU((newinner->slotuse), (inner->slotuse - (mid + 1)));
 
     std::copy(inner->slotkey + mid + 1, inner->slotkey + inner->slotuse,
               newinner->slotkey);
     std::copy(inner->childid + mid + 1, inner->childid + inner->slotuse + 1,
               newinner->childid);
 
-    inner->slotuse = mid;
+    PM_EQU((inner->slotuse), (mid));
 
     *_newkey = inner->slotkey[mid];
     *_newinner = newinner;
