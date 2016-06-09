@@ -19,9 +19,11 @@ class status {
 
   void display() {
     if (++txn_counter % period == 0) {
-      printf("Finished :: %.2lf %% \r",
-             ((double) (txn_counter * 100) / num_txns));
-      fflush(stdout);
+      double __txn_counter = txn_counter;
+      double __num_txns = num_txns;
+      double res = ((__txn_counter * 100) / __num_txns);
+      std::cerr << "Finished :: " << res << "\r";
+      // fflush(stdout);
     }
 
     if (txn_counter == num_txns)
