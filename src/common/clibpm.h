@@ -101,18 +101,21 @@ pmem_map(int fd, size_t len) {
   return base;
 }
 
+
 static inline void pmem_flush_cache(void *addr, size_t len,
                                     __attribute((unused)) int flags) {
   uintptr_t uptr = (uintptr_t) addr & ~(ALIGN - 1);
   uintptr_t end = (uintptr_t) addr + len;
 
   /* loop through 64B-aligned chunks covering the given range */
-  for (; uptr < end; uptr += ALIGN)
-    __builtin_ia32_clflush((void *) uptr);
+  for (; uptr < end; uptr += ALIGN) {
+    // __builtin_ia32_clflush((void *) uptr);
+  }
 }
 
+
 static inline void pmem_persist(void *addr, size_t len, int flags) {
-  // pmem_flush_cache(addr, len, flags);
+  pmem_flush_cache(addr, len, flags);
   PM_FENCE();
   __builtin_ia32_sfence();
 }
