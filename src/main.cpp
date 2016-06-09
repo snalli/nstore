@@ -264,6 +264,26 @@ int main(int argc, char **argv) {
   state.sp = storage::sp;
 
   storage::coordinator cc(state);
+
+                pthread_spin_lock(&tbuf_lock);
+                if(tbuf_sz && mtm_enable_trace)
+                {
+                        tbuf_ptr = 0;
+                        while(tbuf_ptr < tbuf_sz)
+                        {
+                                /*
+                                 * for some reason tbuf[tbuf] doesn't work
+                                 * although i thot tbuf + tbuf is same as
+                                 * tbuf[tbuf];
+                                 */
+                                tbuf_ptr = tbuf_ptr + 1 + fprintf(m_out, "%s", tbuf + tbuf_ptr);
+                                /* tbuf_ptr += TSTR_SZ; */
+                        }
+                        tbuf_sz = 0;
+                }
+                pthread_spin_unlock(&tbuf_lock);
+                pthread_spin_destroy(&tbuf_lock);
+
   cc.eval(state);
 
   //std::cerr<<"STATS : "<<std::endl;
