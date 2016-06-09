@@ -2160,8 +2160,23 @@ class btree {
 
       std::copy_backward(leaf->slotkey + slot, leaf->slotkey + leaf->slotuse,
                          leaf->slotkey + leaf->slotuse + 1);
+      /*
+      fprintf(m_err, "%s:%d start=%p, len=%d, res=%d\n", __func__, __LINE__, (leaf->slotkey + leaf->slotuse + 1), \
+						((leaf->slotuse)-(slot)),
+						(LIBPM <= (unsigned long long)(leaf->slotdata + leaf->slotuse + 1) && \
+   						(unsigned long long )(((leaf->slotdata + leaf->slotuse + 1))+((leaf->slotuse)-(slot))) \
+						<= LIBPM + PMSIZE ? 1 : 0));
+      */
+
       data_copy_backward(leaf->slotdata + slot, leaf->slotdata + leaf->slotuse,
                          leaf->slotdata + leaf->slotuse + 1);
+      /*
+      fprintf(m_err, "%s:%d start=%p, len=%d, res=%d\n", __func__, __LINE__, (leaf->slotdata + leaf->slotuse + 1), \
+						((leaf->slotuse)-(slot)), \
+						(LIBPM <= (unsigned long long)(leaf->slotdata + leaf->slotuse + 1) && \
+   						(unsigned long long)(((leaf->slotdata + leaf->slotuse + 1))+((leaf->slotuse)-(slot))) \
+						<= LIBPM + PMSIZE ? 1 : 0));
+      */
 
       PM_EQU((leaf->slotkey[slot]), (key));
       if (!used_as_set)
