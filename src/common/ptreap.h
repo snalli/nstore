@@ -116,9 +116,9 @@ class ptreap {
       r[0].version = 0;
       (*__tree) = this;
 
-      //cout << "new tree :: " << (*__tree) << "\n";
+      //cerr << "new tree :: " << (*__tree) << "\n";
     } else {
-      //cout << "existing tree :: " << tree << "\n";
+      //cerr << "existing tree :: " << tree << "\n";
     }
   }
 
@@ -182,7 +182,7 @@ class ptreap {
   bool node_free(ptreap_node *node) {
     bool data_free;
 
-    //cout << "free node" << endl;
+    //cerr << "free node" << endl;
 
     if (node->data)
       data_free = node_data_unref(node);
@@ -441,7 +441,7 @@ class ptreap {
     if (!node)
       return 0;
 
-    //cout<<"::: delete versions : "<<node->data->key<<" "<<_version<<"\n";
+    //cerr<<"::: delete versions : "<<node->data->key<<" "<<_version<<"\n";
 
     nv = node->nv;
 
@@ -499,7 +499,7 @@ class ptreap {
       node_free(node);
       node = NULL;
     } else {
-      //cout<<"::: can't remove : "<<node->nv<<"\n";
+      //cerr<<"::: can't remove : "<<node->nv<<"\n";
     }
 
     /* if we saved a version here, then it's because a child still needs it
@@ -543,7 +543,7 @@ class ptreap {
       return;
     }
 
-    //cout<<"DELETE VERSION "<<_version<<endl;
+    //cerr<<"DELETE VERSION "<<_version<<endl;
 
     rm = 0;
     keep = i = first_v(nr);

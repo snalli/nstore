@@ -44,7 +44,7 @@ class ptree {
         doBalancing(true) {
 
     root = (struct node**) _root;
-    cout << "root : " << root << "\n";
+    cerr << "root : " << root << "\n";
   }
 
   virtual ~ptree(void) {
@@ -419,7 +419,7 @@ class ptree {
     node* current_node = (*root);
 
     if (current_node == NULL) {
-      cout << "Empty tree" << endl;
+      cerr << "Empty tree" << endl;
       return;
     }
 
@@ -428,7 +428,7 @@ class ptree {
 
   void display_node(node* np) {
     if (np != NULL) {
-      cout << " key: " << np->key << " val: " << np->val << "  bal: "
+      cerr << " key: " << np->key << " val: " << np->val << "  bal: "
           << get_balance(np) << "\n";
       display_node(np->left);
       display_node(np->right);

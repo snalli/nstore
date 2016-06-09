@@ -432,7 +432,7 @@ class ptree {
     node* current_node = (*root);
 
     if (current_node == NULL) {
-      std::cout << "Empty tree" << std::endl;
+      std::cerr << "Empty tree" << std::endl;
       return;
     }
 
@@ -441,7 +441,7 @@ class ptree {
 
   void display_node(node* np) {
     if (np != NULL) {
-      std::cout << " key: " << np->key << " val: " << np->val << "  bal: "
+      std::cerr << " key: " << np->key << " val: " << np->val << "  bal: "
           << get_balance(np) << "\n";
       display_node(np->left);
       display_node(np->right);

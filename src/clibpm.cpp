@@ -395,7 +395,7 @@ void *pmemalloc_reserve(size_t size) {
     nsize = 64 + ((size + 63) & ~size_t(63));
   }
 
-  //cout<<"size :: "<<size<<" nsize :: "<<nsize<<endl;
+  //cerr<<"size :: "<<size<<" nsize :: "<<nsize<<endl;
   struct clump *clp;
   struct clump* next_clp;
   bool loop = false;

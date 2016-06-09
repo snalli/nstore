@@ -94,8 +94,8 @@ int main(int argc, char *argv[]) {
   duration = (total.tv_sec) * 1000.0;      // sec to ms
   duration += (total.tv_usec) / 1000.0;      // us to ms
 
-  cout << std::fixed << std::setprecision(2);
-  cout << "FSYNC :: Duration(s) : " << (duration / 1000.0) << endl;
+  cerr << std::fixed << std::setprecision(2);
+  cerr << "FSYNC :: Duration(s) : " << (duration / 1000.0) << endl;
 
   // clflush
 
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
   duration = (total.tv_sec) * 1000.0;      // sec to ms
   duration += (total.tv_usec) / 1000.0;      // us to ms
 
-  cout << std::fixed << std::setprecision(2);
-  cout << "CLFLUSH :: Duration(s) : " << (duration / 1000.0) << endl;
+  cerr << std::fixed << std::setprecision(2);
+  cerr << "CLFLUSH :: Duration(s) : " << (duration / 1000.0) << endl;
 
 }

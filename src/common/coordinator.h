@@ -72,10 +72,10 @@ class coordinator {
 
     double max_dur = 0;
     for (unsigned int i = 0; i < num_executors; i++) {
-      std::cout << "dur :" << i << " :: " << tms[i].duration() << std::endl;
+      std::cerr << "dur :" << i << " :: " << tms[i].duration() << std::endl;
       max_dur = std::max(max_dur, tms[i].duration());
     }
-    std::cout << "max dur :" << max_dur << std::endl;
+    std::cerr << "max dur :" << max_dur << std::endl;
     display_stats(conf.etype, max_dur, num_txns);
 
   }
@@ -116,7 +116,7 @@ class coordinator {
         break;
 
       default:
-        std::cout << "Unknown benchmark type :: " << state.btype << std::endl;
+        std::cerr << "Unknown benchmark type :: " << state.btype << std::endl;
         break;
     }
 

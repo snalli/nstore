@@ -99,7 +99,7 @@ std::string lsm_engine::select(const statement& st) {
   }
 
   LOG_INFO("val : %s", val.c_str());
-  //std::cout << "val : " << val << std::endl;
+  //std::cerr << "val : " << val << std::endl;
 
   delete rec_ptr;
   return val;
@@ -310,7 +310,7 @@ void lsm_engine::merge(bool force) {
 
     // Check if need to merge
     if (force || compact) {
-      //std::std::cout << "Merging ! " << std::endl;
+      //std::std::cerr << "Merging ! " << std::endl;
       pbtree<unsigned long, record*>::const_iterator itr;
       record *pm_rec, *fs_rec;
       unsigned long key;
@@ -417,7 +417,7 @@ void lsm_engine::recovery() {
   int entry_itr = 0;
   while (std::getline(log_file, entry_str)) {
     entry_itr++;
-    //std::cout << "entry :  " << entry_str.c_str() << std::endl;
+    //std::cerr << "entry :  " << entry_str.c_str() << std::endl;
     std::stringstream entry(entry_str);
 
     entry >> txn_id >> op_type >> table_id;
@@ -500,7 +500,7 @@ void lsm_engine::recovery() {
         break;
 
       default:
-        std::cout << "Invalid operation type" << op_type << std::endl;
+        std::cerr << "Invalid operation type" << op_type << std::endl;
         break;
     }
 
@@ -509,9 +509,9 @@ void lsm_engine::recovery() {
   fs_log.close();
 
   rec_t.end();
-  std::cout << "LSM :: Recovery duration (ms) : " << rec_t.duration()
+  std::cerr << "LSM :: Recovery duration (ms) : " << rec_t.duration()
             << std::endl;
-  std::cout << "entries :: " << entry_itr << std::endl;
+  std::cerr << "entries :: " << entry_itr << std::endl;
 
 }
 

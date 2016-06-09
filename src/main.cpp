@@ -38,11 +38,13 @@ namespace storage {
             "   -r --recovery          :  Recovery mode \n"
             "   -b --load-batch-size   :  Load batch size \n"
             "   -j --test_b_mode       :  Test benchmark mode \n"
-            "   -i --multi-executors   :  Multiple executors \n");
+            "   -i --multi-executors   :  Multiple executors \n"
+            "   -n --enable-trace      :  E[n]able trace [default:0]\n");
     exit(EXIT_FAILURE);
   }
 
   static struct option opts[] = {
+    { "enable-trace", optional_argument, NULL, 'n' },
     { "log-enable", no_argument, NULL, 'a' },
     { "sp-enable", no_argument, NULL, 's' },
     { "lsm-enable", no_argument, NULL, 'm' },
@@ -68,7 +70,8 @@ namespace storage {
   static void parse_arguments(int argc, char* argv[], config& state) {
 
     // Default Values
-    state.fs_path = std::string("/mnt/pmfs/n-store/");
+    mtm_enable_trace = 0;
+    state.fs_path = std::string("/dev/shm/");
 
     state.num_keys = 10;
     state.num_txns = 10;
@@ -108,28 +111,32 @@ namespace storage {
     // Parse args
     while (1) {
       int idx = 0;
-      int c = getopt_long(argc, argv, "f:x:k:e:p:g:q:b:j:svwascmhludytzori", opts,
+      int c = getopt_long(argc, argv, "n:f:x:k:e:p:g:q:b:j:svwascmhludytzori", opts,
                           &idx);
 
       if (c == -1)
         break;
 
       switch (c) {
+      case 'n':
+	mtm_enable_trace = 1;
+        std::cerr << "mtm_enable_trace: " << mtm_enable_trace << std::endl;
+        break;
       case 'f':
         state.fs_path = std::string(optarg);
-        std::cout << "fs_path: " << state.fs_path << std::endl;
+        std::cerr << "fs_path: " << state.fs_path << std::endl;
         break;
       case 'x':
         state.num_txns = atoi(optarg);
-        std::cout << "num_txns: " << state.num_txns << std::endl;
+        std::cerr << "num_txns: " << state.num_txns << std::endl;
         break;
       case 'k':
         state.num_keys = atoi(optarg);
-        std::cout << "num_keys: " << state.num_keys << std::endl;
+        std::cerr << "num_keys: " << state.num_keys << std::endl;
         break;
       case 'e':
         state.num_executors = atoi(optarg);
-        std::cout << "num_executors: " << state.num_executors << std::endl;
+        std::cerr << "num_executors: " << state.num_executors << std::endl;
         break;
       case 'v':
         state.verbose = true;
@@ -141,80 +148,80 @@ namespace storage {
 
         if (state.ycsb_per_writes == 0)
           state.read_only = true;
-        std::cout << "per_writes: " << state.ycsb_per_writes << std::endl;
+        std::cerr << "per_writes: " << state.ycsb_per_writes << std::endl;
         break;
       case 'g':
         state.gc_interval = atoi(optarg);
-        std::cout << "gc_interval: " << state.gc_interval << std::endl;
+        std::cerr << "gc_interval: " << state.gc_interval << std::endl;
         break;
       case 'a':
         state.etype = engine_type::WAL;
-        std::cout << "wal_enable: " << std::endl;
+        std::cerr << "wal_enable: " << std::endl;
         break;
       case 'w':
         state.etype = engine_type::OPT_WAL;
-        std::cout << "opt_wal_enable " << std::endl;
+        std::cerr << "opt_wal_enable " << std::endl;
         break;
       case 's':
         state.etype = engine_type::SP;
-        std::cout << "sp_enable  " << std::endl;
+        std::cerr << "sp_enable  " << std::endl;
         break;
       case 'c':
         state.etype = engine_type::OPT_SP;
-        std::cout << "opt_sp_enable " << std::endl;
+        std::cerr << "opt_sp_enable " << std::endl;
         break;
       case 'm':
         state.etype = engine_type::LSM;
-        std::cout << "lsm_enable " << std::endl;
+        std::cerr << "lsm_enable " << std::endl;
         break;
       case 'l':
         state.etype = engine_type::OPT_LSM;
-        std::cout << "opt_lsm_enable " << std::endl;
+        std::cerr << "opt_lsm_enable " << std::endl;
         break;
       case 'd':
         state.btype = benchmark_type::TEST;
-        std::cout << "test_benchmark " << std::endl;
+        std::cerr << "test_benchmark " << std::endl;
         break;
       case 'y':
         state.btype = benchmark_type::YCSB;
-        std::cout << "ycsb_benchmark " << std::endl;
+        std::cerr << "ycsb_benchmark " << std::endl;
         break;
       case 't':
         state.btype = benchmark_type::TPCC;
-        std::cout << "tpcc_benchmark " << std::endl;
+        std::cerr << "tpcc_benchmark " << std::endl;
         break;
       case 'j':
         state.test_benchmark_mode = atoi(optarg);
-        std::cout << "test_benchmark_mode: " << state.test_benchmark_mode << std::endl;
+        std::cerr << "test_benchmark_mode: " << state.test_benchmark_mode << std::endl;
         break;
       case 'q':
         state.ycsb_skew = atof(optarg);
-        std::cout << "skew: " << state.ycsb_skew << std::endl;
+        std::cerr << "skew: " << state.ycsb_skew << std::endl;
         break;
       case 'u':
         state.ycsb_update_one = true;
-        std::cout << "ycsb_update_one " << std::endl;
+        std::cerr << "ycsb_update_one " << std::endl;
         break;
       case 'z':
         state.storage_stats = true;
-        std::cout << "storage_stats " << std::endl;
+        std::cerr << "storage_stats " << std::endl;
         break;
       case 'o':
         state.tpcc_stock_level_only = true;
-        std::cout << "tpcc_stock_level " << std::endl;
+        std::cerr << "tpcc_stock_level " << std::endl;
         break;
       case 'r':
         state.recovery = true;
-        std::cout << "recovery " << std::endl;
+        std::cerr << "recovery " << std::endl;
         break;
       case 'b':
         state.load_batch_size = atoi(optarg);
-        std::cout << "load_batch_size: " << state.load_batch_size << std::endl;
+        std::cerr << "load_batch_size: " << state.load_batch_size << std::endl;
         break;
       case 'i':
         state.single = false;
         state.num_executors = 2;
-        std::cout << "multiple executors " << std::endl;
+        std::cerr << "multiple executors " << std::endl;
         break;
       case 'h':
         usage_exit(stderr);
@@ -247,7 +254,7 @@ int main(int argc, char **argv) {
 
   size_t pmp_size = PMSIZE;
   if ((storage::pmp = storage::pmemalloc_init(path, pmp_size)) == NULL)
-    std::cout << "pmemalloc_init on :" << path << std::endl;
+    std::cerr << "pmemalloc_init on :" << path << std::endl;
 
   storage::sp = (storage::static_info *) storage::pmemalloc_static_area();
 
@@ -259,9 +266,9 @@ int main(int argc, char **argv) {
   storage::coordinator cc(state);
   cc.eval(state);
 
-  //std::cout<<"STATS : "<<std::endl;
-  //std::cout<<"PCOMMIT : "<<storage::pcommit<<std::endl;
-  //std::cout<<"CLFLUSH : "<<storage::clflush<<std::endl;
+  //std::cerr<<"STATS : "<<std::endl;
+  //std::cerr<<"PCOMMIT : "<<storage::pcommit<<std::endl;
+  //std::cerr<<"CLFLUSH : "<<storage::clflush<<std::endl;
 
   return 0;
 }

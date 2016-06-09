@@ -17,11 +17,11 @@ void ptreap_lookup(ptreap<int, int*> *tree, unsigned int version,
   int* ret;
 
   ret = tree->at(key, version);
-  //std::cout << "version :: " << version << "  key :: " << key << " ";
+  //std::cerr << "version :: " << version << "  key :: " << key << " ";
   if (ret != NULL) {
-    //std::cout << "val :: " << (*ret) << std::endl;
+    //std::cerr << "val :: " << (*ret) << std::endl;
   } else {
-    //std::cout << "val :: not found" << std::endl;
+    //std::cerr << "val :: not found" << std::endl;
   }
 }
 
@@ -33,7 +33,7 @@ void test_ptreap() {
 
   long pmp_size = 10 * 1024 * 1024;
   if ((pmp = pmemalloc_init(path, pmp_size)) == NULL)
-    std::cout << "pmemalloc_init on :" << path << std::endl;
+    std::cerr << "pmemalloc_init on :" << path << std::endl;
 
   sp = (struct static_info *) pmemalloc_static_area();
 
@@ -52,7 +52,7 @@ void test_ptreap() {
   tree->insert(3, &(nums[3]));
   tree->insert(6, &(nums[6]));
 
-  //std::cout << "nodes ::" << tree->nnodes << std::endl;
+  //std::cerr << "nodes ::" << tree->nnodes << std::endl;
 
   for (i = 1; i <= 4; ++i)
     ptreap_lookup(tree, tree->current_version(), i);
@@ -68,26 +68,26 @@ void test_ptreap() {
   for (i = 1; i <= 4; ++i)
     ptreap_lookup(tree, tree->current_version(), i);
 
-  //std::cout << "nodes ::" << tree->nnodes << std::endl;
+  //std::cerr << "nodes ::" << tree->nnodes << std::endl;
 
   ptreap_lookup(tree, 1, 2);
   ptreap_lookup(tree, 1, 3);
   ptreap_lookup(tree, 0, 2);
   ptreap_lookup(tree, 0, 3);
 
-  //std::cout << "nodes ::" << tree->nnodes << std::endl;
+  //std::cerr << "nodes ::" << tree->nnodes << std::endl;
 
   tree->delete_versions(0);
 
   ptreap_lookup(tree, 0, 2);
   ptreap_lookup(tree, 0, 3);
 
-  //std::cout << "nodes ::" << tree->nnodes << std::endl;
+  //std::cerr << "nodes ::" << tree->nnodes << std::endl;
 
   delete tree;
   sp->ptrs[0] = NULL;
 
-  //std::cout << "nodes ::" << tree->nnodes << std::endl;
+  //std::cerr << "nodes ::" << tree->nnodes << std::endl;
 
   delete[] nums;
 

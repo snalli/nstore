@@ -31,7 +31,7 @@ class logger {
       fseek(log_file, 0, SEEK_END);
       log_offset = ftell(log_file);
     } else {
-      std::cout << "Log file not found : " << log_file_name << std::endl;
+      std::cerr << "Log file not found : " << log_file_name << std::endl;
       exit(EXIT_FAILURE);
     }
   }

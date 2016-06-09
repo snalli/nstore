@@ -287,7 +287,7 @@ void opt_wal_engine::recovery() {
   rec_t.start();
 
   for (char* ptr : undo_log) {
-    //std::cout << "entry : --" << ptr << "-- " << std::endl;
+    //std::cerr << "entry : --" << ptr << "-- " << std::endl;
     std::stringstream entry(ptr);
 
     entry >> txn_id >> op_type >> table_id;
@@ -388,7 +388,7 @@ void opt_wal_engine::recovery() {
                 break;
 
               default:
-                std::cout << "Invalid field type : " << op_type << std::endl;
+                std::cerr << "Invalid field type : " << op_type << std::endl;
                 break;
             }
           }
@@ -396,7 +396,7 @@ void opt_wal_engine::recovery() {
         break;
 
       default:
-        std::cout << "Invalid operation type" << op_type << std::endl;
+        std::cerr << "Invalid operation type" << op_type << std::endl;
         break;
     }
 
@@ -407,7 +407,7 @@ void opt_wal_engine::recovery() {
   pm_log->clear();
 
   rec_t.end();
-  std::cout << "OPT_WAL :: Recovery duration (ms) : " << rec_t.duration() << std::endl;
+  std::cerr << "OPT_WAL :: Recovery duration (ms) : " << rec_t.duration() << std::endl;
 
 }
 

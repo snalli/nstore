@@ -45,7 +45,7 @@ class engine {
         de = new opt_lsm_engine(conf, db, read_only, tid);
         break;
       default:
-        std::cout << "Unknown engine type :: " << etype << std::endl;
+        std::cerr << "Unknown engine type :: " << etype << std::endl;
         exit(EXIT_FAILURE);
         break;
     }
@@ -73,7 +73,7 @@ class engine {
   }
 
   virtual void display() {
-    std::cout << "ST" << std::endl;
+    std::cerr << "ST" << std::endl;
   }
 
   void load(const statement& st) {

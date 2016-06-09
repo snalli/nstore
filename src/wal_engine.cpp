@@ -298,7 +298,7 @@ void wal_engine::recovery() {
   int entry_itr = 0;
   while (std::getline(log_file, entry_str)) {
     entry_itr++;
-    //std::cout << "entry :  " << entry_str.c_str() << std::endl;
+    //std::cerr << "entry :  " << entry_str.c_str() << std::endl;
     std::stringstream entry(entry_str);
 
     entry >> txn_id >> op_type >> table_id;
@@ -381,16 +381,16 @@ void wal_engine::recovery() {
         break;
 
       default:
-        std::cout << "Invalid operation type" << op_type << std::endl;
+        std::cerr << "Invalid operation type" << op_type << std::endl;
         break;
     }
 
   }
 
   rec_t.end();
-  std::cout << "WAL :: Recovery duration (ms) : " << rec_t.duration()
+  std::cerr << "WAL :: Recovery duration (ms) : " << rec_t.duration()
             << std::endl;
-  std::cout << "entries :: " << entry_itr << std::endl;
+  std::cerr << "entries :: " << entry_itr << std::endl;
 }
 
 }

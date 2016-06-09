@@ -87,7 +87,7 @@ int main() {
 
   long pmp_size = 1024 * 1024 * 1024;
   if ((pmp = pmemalloc_init(path, pmp_size)) == NULL)
-    cout << "pmemalloc_init on :" << path << endl;
+    cerr << "pmemalloc_init on :" << path << endl;
 
   timeval t1, t2, diff;
   double duration;
@@ -102,8 +102,8 @@ int main() {
   duration = (diff.tv_sec) * 1000.0;
   duration += (diff.tv_usec) / 1000.0;
 
-  cout << "time :: " << duration << " (ms) " << endl;
-  cout << "mem :: " << alloc << endl;
+  cerr << "time :: " << duration << " (ms) " << endl;
+  cerr << "mem :: " << alloc << endl;
 
 
   gettimeofday(&t1, NULL);
@@ -115,8 +115,8 @@ int main() {
   duration = (diff.tv_sec) * 1000.0;
   duration += (diff.tv_usec) / 1000.0;
 
-  cout << "time :: " << duration << " (ms) " << endl;
-  cout << "mem :: " << alloc << endl;
+  cerr << "time :: " << duration << " (ms) " << endl;
+  cerr << "mem :: " << alloc << endl;
 
   return 0;
 }

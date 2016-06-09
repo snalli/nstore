@@ -101,39 +101,39 @@ namespace storage {
 
         switch (etype) {
             case engine_type::WAL:
-                std::cout << "WAL :: ";
+                std::cerr << "WAL :: ";
                 break;
 
             case engine_type::SP:
-                std::cout << "SP :: ";
+                std::cerr << "SP :: ";
                 break;
 
             case engine_type::LSM:
-                std::cout << "LSM :: ";
+                std::cerr << "LSM :: ";
                 break;
 
             case engine_type::OPT_WAL:
-                std::cout << "OPT_WAL :: ";
+                std::cerr << "OPT_WAL :: ";
                 break;
 
             case engine_type::OPT_SP:
-                std::cout << "OPT_SP :: ";
+                std::cerr << "OPT_SP :: ";
                 break;
 
             case engine_type::OPT_LSM:
-                std::cout << "OPT_LSM :: ";
+                std::cerr << "OPT_LSM :: ";
                 break;
 
             default:
-                std::cout << "Unknown engine type " << std::endl;
+                std::cerr << "Unknown engine type " << std::endl;
                 break;
         }
 
-        std::cout << std::fixed << std::setprecision(2);
-        std::cout << "Duration(s) : " << (duration / 1000.0) << " ";
+        std::cerr << std::fixed << std::setprecision(2);
+        std::cerr << "Duration(s) : " << (duration / 1000.0) << " ";
 
         throughput = (num_txns * 1000.0) / duration;
-        std::cout << "Throughput  : " << throughput << std::endl;
+        std::cerr << "Throughput  : " << throughput << std::endl;
     }
 
     // RANDOM DIST
@@ -175,7 +175,7 @@ namespace storage {
                 }
             }
 
-            //std::cout << "zipf_val :: " << zipf_value << std::endl;
+            //std::cerr << "zipf_val :: " << zipf_value << std::endl;
             zipf_dist.push_back(zipf_value);
         }
 
@@ -202,7 +202,7 @@ namespace storage {
             else
                 val = bound + z * diff;
 
-            //std::cout << "simple_val :: " << val << " bound : "<<bound<<" alpha : "<<alpha<< " z : "<<z<<std::endl;
+            //std::cerr << "simple_val :: " << val << " bound : "<<bound<<" alpha : "<<alpha<< " z : "<<z<<std::endl;
             simple_dist.push_back(val);
         }
     }

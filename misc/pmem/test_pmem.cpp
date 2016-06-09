@@ -14,7 +14,7 @@ using namespace std;
 
 void do_task(unsigned int tid) {
 
-  std::cout << "tid :: " << tid << std::endl;
+  std::cerr << "tid :: " << tid << std::endl;
   std::vector<void*> ptrs;
 
   int ops = 1024 * 1024 * 4;
@@ -46,8 +46,8 @@ void do_task(unsigned int tid) {
   end = std::chrono::system_clock::now();
 
   elapsed_seconds = end - start;
-  std::cout << "elapsed time: " << elapsed_seconds.count() << "s\n";
-  cout.flush();
+  std::cerr << "elapsed time: " << elapsed_seconds.count() << "s\n";
+  cerr.flush();
 
   ptrs.clear();
 
@@ -69,7 +69,7 @@ void do_task(unsigned int tid) {
 
   end = std::chrono::system_clock::now();
   elapsed_seconds = end - start;
-  cout << "elapsed time: " << elapsed_seconds.count() << "s\n";
+  cerr << "elapsed time: " << elapsed_seconds.count() << "s\n";
 }
 
 int main(int argc, char *argv[]) {
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
 
   size_t pmp_size = 64 * 1024 * 1024;
   if ((storage::pmp = storage::pmemalloc_init(path, pmp_size)) == NULL)
-    std::cout << "pmemalloc_init on :" << path << std::endl;
+    std::cerr << "pmemalloc_init on :" << path << std::endl;
 
   storage::sp = (storage::static_info *) storage::pmemalloc_static_area();
 

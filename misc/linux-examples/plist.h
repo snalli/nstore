@@ -28,7 +28,7 @@ class plist {
     head = (struct node**) _head;
     tail = (struct node**) _tail;
 
-    cout << "head : " << head << " tail : " << tail << "\n";
+    cerr << "head : " << head << " tail : " << tail << "\n";
   }
 
   ~plist() {
@@ -167,10 +167,10 @@ class plist {
     struct node* np = (*head);
 
     while (np) {
-      cout << np->val << " -> ";
+      cerr << np->val << " -> ";
       np = np->next;
     }
-    cout << endl;
+    cerr << endl;
 
   }
 

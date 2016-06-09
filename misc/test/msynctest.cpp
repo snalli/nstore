@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
   offset = 0;
   int itr;
 
-  cout << "len :" << len << endl;
+  cerr << "len :" << len << endl;
 
   start = std::chrono::high_resolution_clock::now();
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
 
   finish = std::chrono::high_resolution_clock::now();
   elapsed_seconds = finish - start;
-  std::cout << "Execution duration: " << elapsed_seconds.count() << endl;
+  std::cerr << "Execution duration: " << elapsed_seconds.count() << endl;
 
   return 0;
 }

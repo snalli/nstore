@@ -16,7 +16,7 @@ int main() {
 
   long pmp_size = 10 * 1024 * 1024;
   if ((pmp = pmemalloc_init(path, pmp_size)) == NULL)
-    cout << "pmemalloc_init on :" << path << endl;
+    cerr << "pmemalloc_init on :" << path << endl;
 
   sp = (struct static_info *) pmemalloc_static_area();
 

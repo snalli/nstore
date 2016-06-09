@@ -323,7 +323,7 @@ void opt_lsm_engine::merge_check() {
 }
 
 void opt_lsm_engine::merge(bool force) {
-  //std::std::cout << "Merging ! " << merge_looper << std::endl;
+  //std::std::cerr << "Merging ! " << merge_looper << std::endl;
 
   std::vector<table*> tables = db->tables->get_data();
   for (table* tab : tables) {
@@ -434,7 +434,7 @@ void opt_lsm_engine::recovery() {
 
   for (char* ptr : undo_log) {
     txn_cnt++;
-    //std::cout << "entry : --" << ptr << "-- " << std::endl;
+    //std::cerr << "entry : --" << ptr << "-- " << std::endl;
 
     if (total_txns - txn_cnt < conf.active_txn_threshold)
       continue;
@@ -544,7 +544,7 @@ void opt_lsm_engine::recovery() {
                 break;
 
               default:
-                std::cout << "Invalid field type : " << op_type << std::endl;
+                std::cerr << "Invalid field type : " << op_type << std::endl;
                 break;
             }
           }
@@ -553,7 +553,7 @@ void opt_lsm_engine::recovery() {
         break;
 
       default:
-        std::cout << "Invalid operation type" << op_type << std::endl;
+        std::cerr << "Invalid operation type" << op_type << std::endl;
         break;
     }
 
@@ -564,7 +564,7 @@ void opt_lsm_engine::recovery() {
   pm_log->clear();
 
   rec_t.end();
-  std::cout << "OPT_LSM :: Recovery duration (ms) : " << rec_t.duration()
+  std::cerr << "OPT_LSM :: Recovery duration (ms) : " << rec_t.duration()
             << std::endl;
 
 }

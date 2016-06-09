@@ -190,7 +190,7 @@ class plist {
     struct node* np = (*head);
 
     if (np == NULL) {
-      std::cout << "empty list" << std::endl;
+      std::cerr << "empty list" << std::endl;
       return;
     }
 
@@ -198,7 +198,7 @@ class plist {
       printf("%p %s", np->val, np->val);
       np = np->next;
     }
-    std::cout << std::endl;
+    std::cerr << std::endl;
 
   }
 

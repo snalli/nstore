@@ -125,7 +125,7 @@ class record_ {
           break;
 
         default:
-          cout << "Invalid type : " << type << endl;
+          cerr << "Invalid type : " << type << endl;
           break;
       }
     }
@@ -196,7 +196,7 @@ int main() {
   record_* r = new table_record_(t1, 21, 56, 23.68, vc1);
 
   std::string key = get_data(r, s);
-  cout << "key : " << key << endl;
+  cerr << "key : " << key << endl;
 
   offset = 0, len = 0;
   cols.clear();
@@ -209,7 +209,7 @@ int main() {
   table_index_* ti1 = new table_index_(s2);
 
   key = get_data(r, s2);
-  cout << "key : " << key << endl;
+  cerr << "key : " << key << endl;
 
   return 0;
 }

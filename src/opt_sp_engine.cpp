@@ -302,7 +302,7 @@ void opt_sp_engine::txn_end(__attribute__((unused)) bool commit) {
 
 void opt_sp_engine::recovery() {
 
-  std::cout << "OPT_SP :: Recovery duration (ms) : " << 0.0 << std::endl;
+  std::cerr << "OPT_SP :: Recovery duration (ms) : " << 0.0 << std::endl;
 
 }
 

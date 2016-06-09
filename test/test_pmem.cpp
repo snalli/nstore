@@ -17,7 +17,7 @@ void test_pmem() {
 
   long pmp_size = 1024 * 1024 * 1024;
   if ((pmp = pmemalloc_init(path, pmp_size)) == NULL)
-    std::cout << "pmemalloc_init on :" << path << std::endl;
+    std::cerr << "pmemalloc_init on :" << path << std::endl;
 
   sp = (struct static_info *) pmemalloc_static_area();
 

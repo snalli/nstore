@@ -118,17 +118,17 @@ static void parse_arguments(int argc, char* argv[], config& state) {
 
       case 'r':
         state.random_mode = true;
-        cout << "random_mode " << endl;
+        cerr << "random_mode " << endl;
         break;
 
       case 's':
         state.sync_mode = true;
-        cout << "sync_mode " << endl;
+        cerr << "sync_mode " << endl;
         break;
 
       case 'c':
         state.chunk_size = atoi(optarg);
-        cout << "chunk_size : " << state.chunk_size << endl;
+        cerr << "chunk_size : " << state.chunk_size << endl;
         break;
 
       case 'h':
@@ -143,22 +143,22 @@ static void parse_arguments(int argc, char* argv[], config& state) {
   switch (state.fs_type) {
     case 0:
       state.nvm_mode = true;
-      cout << "nvm_mode " << endl;
+      cerr << "nvm_mode " << endl;
       break;
 
     case 1:
       state.fs_path = "/mnt/pmfs/n-store/";
-      cout << "fs_path : " << state.fs_path << endl;
+      cerr << "fs_path : " << state.fs_path << endl;
       break;
 
     case 2:
       state.fs_path = "./";
-      cout << "fs_path : " << state.fs_path << endl;
+      cerr << "fs_path : " << state.fs_path << endl;
       break;
 
     case 3:
       state.fs_path = "/tmp/tmpdir/";
-      cout << "fs_path : " << state.fs_path << endl;
+      cerr << "fs_path : " << state.fs_path << endl;
       break;
 
     default:

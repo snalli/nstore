@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 
   long pmp_size = 10 * 1024 * 1024;
   if ((pmp = pmemalloc_init(path, pmp_size)) == NULL)
-    cout << "pmemalloc_init on :" << path << endl;
+    cerr << "pmemalloc_init on :" << path << endl;
 
   sp = (struct static_info *) pmemalloc_static_area();
 
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
   }
   bt->txn_commit(t);
 
-  cout << "size :: " << bt->stat.leaf_pages << endl;
+  cerr << "size :: " << bt->stat.leaf_pages << endl;
 
   //bt->cow_btree_revert();
 

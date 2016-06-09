@@ -16,11 +16,11 @@ void lookup(ptreap<int, int*> *tree, unsigned int version,
   int* ret;
 
   ret = tree->at(version, key);
-  cout << "version :: " << version << "  key :: " << key << " ";
+  cerr << "version :: " << version << "  key :: " << key << " ";
   if (ret != NULL)
-    cout << "val :: " << (*ret) << endl;
+    cerr << "val :: " << (*ret) << endl;
   else
-    cout << "val :: not found" << endl;
+    cerr << "val :: not found" << endl;
 
 }
 
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 
   long pmp_size = 10 * 1024 * 1024;
   if ((pmp = pmemalloc_init(path, pmp_size)) == NULL)
-    cout << "pmemalloc_init on :" << path << endl;
+    cerr << "pmemalloc_init on :" << path << endl;
 
   sp = (struct static_info *) pmemalloc_static_area();
 
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
   tree->insert(3, &(nums[3]));
   tree->insert(6, &(nums[6]));
 
-  cout << "nodes ::" << tree->nnodes << endl;
+  cerr << "nodes ::" << tree->nnodes << endl;
 
   for (i = 1; i <= 4; ++i)
     lookup(tree, tree->current_version(), i);
@@ -65,26 +65,26 @@ int main(int argc, char **argv) {
   for (i = 1; i <= 4; ++i)
     lookup(tree, tree->current_version(), i);
 
-  cout << "nodes ::" << tree->nnodes << endl;
+  cerr << "nodes ::" << tree->nnodes << endl;
 
   lookup(tree, 1, 2);
   lookup(tree, 1, 3);
   lookup(tree, 0, 2);
   lookup(tree, 0, 3);
 
-  cout << "nodes ::" << tree->nnodes << endl;
+  cerr << "nodes ::" << tree->nnodes << endl;
 
   tree->delete_versions(0);
 
   lookup(tree, 0, 2);
   lookup(tree, 0, 3);
 
-  cout << "nodes ::" << tree->nnodes << endl;
+  cerr << "nodes ::" << tree->nnodes << endl;
 
   delete tree;
   sp->ptrs[0] = NULL;
 
-  cout << "nodes ::" << tree->nnodes << endl;
+  cerr << "nodes ::" << tree->nnodes << endl;
 
   delete[] nums;
 

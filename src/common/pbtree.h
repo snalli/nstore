@@ -14,7 +14,7 @@ namespace storage {
 
 #define BTREE_NODE_SIZE 512
 
-/// Print out debug information to std::cout if BTREE_DEBUG is defined.
+/// Print out debug information to std::cerr if BTREE_DEBUG is defined.
 #define BTREE_PRINT(x)
 
 /// Assertion only if BTREE_DEBUG is defined. This is not used in verify().
@@ -2030,7 +2030,7 @@ class btree {
       PM_EQU((m_stats->itemcount), (m_stats->itemcount+1));
 
 #ifdef BTREE_DEBUG
-    if (debug) print(std::cout);
+    if (debug) print(std::cerr);
 #endif
 
     if (selfverify) {
@@ -2078,8 +2078,8 @@ class btree {
 #ifdef BTREE_DEBUG
           if (debug)
           {
-            print_node(std::cout, inner);
-            print_node(std::cout, *splitnode);
+            print_node(std::cerr, inner);
+            print_node(std::cerr, *splitnode);
           }
 #endif
 
@@ -2486,7 +2486,7 @@ class btree {
       --m_stats->itemcount;
 
 #ifdef BTREE_DEBUG
-    if (debug) print(std::cout);
+    if (debug) print(std::cerr);
 #endif
     if (selfverify)
       verify();
@@ -2527,7 +2527,7 @@ class btree {
       --m_stats->itemcount;
 
 #ifdef BTREE_DEBUG
-    if (debug) print(std::cout);
+    if (debug) print(std::cerr);
 #endif
     if (selfverify)
       verify();

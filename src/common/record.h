@@ -76,7 +76,7 @@ class record {
         break;
 
       default:
-        std::cout << "Invalid type : " << type << std::endl;
+        std::cerr << "Invalid type : " << type << std::endl;
         exit(EXIT_FAILURE);
         break;
     }
@@ -103,7 +103,7 @@ class record {
         break;
 
       default:
-        std::cout << "Invalid type : " << type << std::endl;
+        std::cerr << "Invalid type : " << type << std::endl;
         break;
     }
   }

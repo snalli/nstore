@@ -81,7 +81,7 @@ test_benchmark::test_benchmark(config _conf, unsigned int tid, database* _db,
 
 	// Initialization mode
 	if (sp->init == 0) {
-		//cout << "Initialization Mode" << endl;
+		//cerr << "Initialization Mode" << endl;
 		sp->ptrs[0] = _db;
 
 		table* testtable = create_testtable(conf);
@@ -89,7 +89,7 @@ test_benchmark::test_benchmark(config _conf, unsigned int tid, database* _db,
 
 		sp->init = 1;
 	} else {
-		//cout << "Recovery Mode " << endl;
+		//cerr << "Recovery Mode " << endl;
 		database* db = (database*) sp->ptrs[0];
 		db->reset(conf, tid);
 	}
@@ -340,7 +340,7 @@ void test_benchmark::execute() {
 	unsigned int txn_itr;
         status ss(num_txns);
 
-	std::cout << "num_txns :: " << num_txns << std::endl;
+	std::cerr << "num_txns :: " << num_txns << std::endl;
 
 	for (txn_itr = 0; txn_itr < num_txns; txn_itr++) {
 		switch(conf.test_benchmark_mode) {
@@ -372,23 +372,23 @@ void test_benchmark::execute() {
 
 	if(tid == 0)
 	{
-		std::cout <<"---------------------------------------------------"<<std::endl;
+		std::cerr <<"---------------------------------------------------"<<std::endl;
 
 		switch(conf.test_benchmark_mode) {
 		case 0:
-			std::cout <<"TYPE :: SELECT" <<std::endl;
+			std::cerr <<"TYPE :: SELECT" <<std::endl;
 			break;
 
 		case 1:
-			std::cout <<"TYPE :: INSERT" <<std::endl;
+			std::cerr <<"TYPE :: INSERT" <<std::endl;
 			break;
 
 		case 2:
-			std::cout <<"TYPE :: UPDATE" <<std::endl;
+			std::cerr <<"TYPE :: UPDATE" <<std::endl;
 			break;
 
 		case 3:
-			std::cout <<"TYPE :: DELETE" <<std::endl;
+			std::cerr <<"TYPE :: DELETE" <<std::endl;
 			break;
 
 		default:
@@ -396,10 +396,10 @@ void test_benchmark::execute() {
 			break;
 		}
 
-		std::cout <<"TEST TABLE STATS ::" <<std::endl;
-		std::cout<<"Index Size : "<<db->tables->at(TEST_TABLE_ID)->indices->at(0)->pm_map->size()<<std::endl;
+		std::cerr <<"TEST TABLE STATS ::" <<std::endl;
+		std::cerr<<"Index Size : "<<db->tables->at(TEST_TABLE_ID)->indices->at(0)->pm_map->size()<<std::endl;
 
-		//std::cout << "duration :: " << tm->duration() << std::endl;
+		//std::cerr << "duration :: " << tm->duration() << std::endl;
 	}
 
 	delete ee;

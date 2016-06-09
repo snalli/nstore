@@ -117,9 +117,9 @@ class ptreap {
       r[0].version = 0;
       (*__tree) = this;
 
-      cout << "new tree :: " << (*__tree) << "\n";
+      cerr << "new tree :: " << (*__tree) << "\n";
     } else {
-      cout << "existing tree :: " << tree << "\n";
+      cerr << "existing tree :: " << tree << "\n";
     }
   }
 
@@ -1267,7 +1267,7 @@ class ptreap {
 
     rv = root_find_version(version);
     node = rv->root;
-    //cout<<"root ::"<<rv->root<<endl;
+    //cerr<<"root ::"<<rv->root<<endl;
     if (!node) {
       return NULL;
     }

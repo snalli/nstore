@@ -186,15 +186,15 @@ class plist {
     struct node* np = (*head);
 
     if (np == NULL) {
-      cout << "empty list" << endl;
+      cerr << "empty list" << endl;
       return;
     }
 
     while (np) {
-      cout << np->val;
+      cerr << np->val;
       np = np->next;
     }
-    cout << endl;
+    cerr << endl;
 
   }
 

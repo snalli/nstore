@@ -82,7 +82,7 @@ ycsb_benchmark::ycsb_benchmark(config _conf, unsigned int tid, database* _db,
 
   // Initialization mode
   if (sp->init == 0) {
-    //cout << "Initialization Mode" << endl;
+    //cerr << "Initialization Mode" << endl;
     sp->ptrs[0] = _db;
 
     table* usertable = create_usertable(conf);
@@ -90,7 +90,7 @@ ycsb_benchmark::ycsb_benchmark(config _conf, unsigned int tid, database* _db,
 
     sp->init = 1;
   } else {
-    //cout << "Recovery Mode " << endl;
+    //cerr << "Recovery Mode " << endl;
     database* db = (database*) sp->ptrs[0]; // We are reusing old tables
     db->reset(conf, tid);
   }
@@ -264,7 +264,7 @@ void ycsb_benchmark::execute() {
   unsigned int txn_itr;
   status ss(num_txns);
 
-  std::cout << "num_txns :: " << num_txns << std::endl;
+  std::cerr << "num_txns :: " << num_txns << std::endl;
 
   for (txn_itr = 0; txn_itr < num_txns; txn_itr++) {
     double u = uniform_dist[txn_itr];
@@ -279,7 +279,7 @@ void ycsb_benchmark::execute() {
       ss.display();
   }
 
-  std::cout << "duration :: " << tm->duration() << std::endl;
+  std::cerr << "duration :: " << tm->duration() << std::endl;
 
   delete ee;
 }

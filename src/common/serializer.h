@@ -51,7 +51,7 @@ class serializer {
             break;
 
           default:
-            std::cout << "invalid type : " << type << std::endl;
+            std::cerr << "invalid type : " << type << std::endl;
             exit(EXIT_FAILURE);
             break;
         }
@@ -103,8 +103,8 @@ class serializer {
             break;
 
           default:
-            std::cout << "invalid type : --" << type << "--" << std::endl;
-            std::cout << "entry : --" << entry_str << "--" << std::endl;
+            std::cerr << "invalid type : --" << type << "--" << std::endl;
+            std::cerr << "entry : --" << entry_str << "--" << std::endl;
             exit(EXIT_FAILURE);
             break;
         }

@@ -46,7 +46,7 @@ class storage {
       //size_t sz = ftell(storage_file);
       //printf("File size :: %s %lu \n", storage_file_name.c_str(), sz);
     } else {
-      std::cout << "File not found : " << storage_file_name << std::endl;
+      std::cerr << "File not found : " << storage_file_name << std::endl;
       exit(EXIT_FAILURE);
     }
   }

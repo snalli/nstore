@@ -88,15 +88,15 @@ int main(int argc, char *argv[]) {
 
   long pmp_size = 10 * 1024 * 1024;
   if ((pmp = pmemalloc_init(path, pmp_size)) == NULL)
-    cout << "pmemalloc_init on :" << path << endl;
+    cerr << "pmemalloc_init on :" << path << endl;
 
   sp = (struct static_info *) pmemalloc_static_area();
 
   dbase_* db = NULL;
 
   if (sp->init == 0) {
-    cout << "Initialization mode" << endl;
-    cout << "Database :" << db << endl;
+    cerr << "Initialization mode" << endl;
+    cerr << "Database :" << db << endl;
 
     db = new dbase_("ycsb");
     sp->ptrs[0] = db;
@@ -139,17 +139,17 @@ int main(int argc, char *argv[]) {
 
     tables->display();
 
-    cout << "Index 1: " << tables->at(0)->indices->at(0)->map << endl;
+    cerr << "Index 1: " << tables->at(0)->indices->at(0)->map << endl;
 
     sp->init = 1;
   } else {
-    cout << "Recovery mode ::" << endl;
+    cerr << "Recovery mode ::" << endl;
     db = (dbase_*) sp->ptrs[0];
-    cout << "Database :" << db << endl;
+    cerr << "Database :" << db << endl;
 
     db->tables->display();
 
-    cout << "Index 2: " << db->tables->at(0)->indices->at(0)->map << endl;
+    cerr << "Index 2: " << db->tables->at(0)->indices->at(0)->map << endl;
 
     db->tables->at(0)->indices->at(0)->map->insert(3, 30);
     db->tables->at(0)->indices->at(0)->map->insert(1, 23);

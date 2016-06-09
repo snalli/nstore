@@ -29,7 +29,7 @@ tpcc_benchmark::tpcc_benchmark(config _conf, unsigned int tid, database* _db,
 
   // Initialization mode
   if (sp->init == 0) {
-    //cout << "Initialization Mode" << endl;
+    //cerr << "Initialization Mode" << endl;
 
     sp->ptrs[0] = db;
 
@@ -54,7 +54,7 @@ tpcc_benchmark::tpcc_benchmark(config _conf, unsigned int tid, database* _db,
 
     sp->init = 1;
   } else {
-    //cout << "Recovery Mode " << endl;
+    //cerr << "Recovery Mode " << endl;
     database* db = (database*) sp->ptrs[0];
     db->reset(conf, tid);
   }
@@ -2175,19 +2175,19 @@ void tpcc_benchmark::execute() {
     } else {
 
       if (u <= 0.04) {
-        //std::cout << "stock_level " << std::endl;
+        //std::cerr << "stock_level " << std::endl;
         do_stock_level(ee);
       } else if (u <= 0.08) {
-        //std::cout << "delivery " << std::endl;
+        //std::cerr << "delivery " << std::endl;
         do_delivery(ee);
       } else if (u <= 0.12) {
-        //std::cout << "order_status " << std::endl;
+        //std::cerr << "order_status " << std::endl;
         do_order_status(ee);
       } else if (u <= 0.55) {
-        //std::cout << "payment " << std::endl;
+        //std::cerr << "payment " << std::endl;
         do_payment(ee);
       } else {
-        //std::cout << "new_order " << std::endl;
+        //std::cerr << "new_order " << std::endl;
         do_new_order(ee);
       }
     }

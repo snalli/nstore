@@ -278,7 +278,7 @@ void sp_engine::txn_end(__attribute__((unused)) bool commit) {
 
 void sp_engine::recovery() {
 
-  std::cout << "SP :: Recovery duration (ms) : " << 0.0 << std::endl;
+  std::cerr << "SP :: Recovery duration (ms) : " << 0.0 << std::endl;
 
 }
 

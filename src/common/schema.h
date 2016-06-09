@@ -37,17 +37,17 @@ class schema {
     unsigned int itr;
 
     for (itr = 0; itr < num_columns; itr++) {
-      std::cout << std::setw(20);
-      std::cout << "offset    : " << columns[itr].offset << " ";
-      std::cout << "ser_len   : " << columns[itr].ser_len << " ";
-      std::cout << "deser_len : " << columns[itr].deser_len << " ";
-      std::cout << "type      : " << (int) columns[itr].type << " ";
-      std::cout << "inlined   : " << (int) columns[itr].inlined << " ";
-      std::cout << "enabled   : " << (int) columns[itr].enabled << " ";
-      std::cout << "\n";
+      std::cerr << std::setw(20);
+      std::cerr << "offset    : " << columns[itr].offset << " ";
+      std::cerr << "ser_len   : " << columns[itr].ser_len << " ";
+      std::cerr << "deser_len : " << columns[itr].deser_len << " ";
+      std::cerr << "type      : " << (int) columns[itr].type << " ";
+      std::cerr << "inlined   : " << (int) columns[itr].inlined << " ";
+      std::cerr << "enabled   : " << (int) columns[itr].enabled << " ";
+      std::cerr << "\n";
     }
 
-    std::cout << "\n";
+    std::cerr << "\n";
   }
 
   field_info* columns;

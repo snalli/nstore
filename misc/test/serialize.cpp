@@ -25,6 +25,6 @@ int main() {
   boost::archive::text_iarchive iarch(ifile);
   iarch >> new_map;
 
-  std::cout << (map == new_map) << std::endl;
+  std::cerr << (map == new_map) << std::endl;
 
 }
