@@ -112,7 +112,8 @@ static inline void pmem_flush_cache(void *addr, size_t len,
 }
 
 static inline void pmem_persist(void *addr, size_t len, int flags) {
-  pmem_flush_cache(addr, len, flags);
+  // pmem_flush_cache(addr, len, flags);
+  PM_FENCE();
   __builtin_ia32_sfence();
 }
 
