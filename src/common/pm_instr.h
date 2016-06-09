@@ -238,6 +238,17 @@ extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
             memcpy(pm_dst, src, sz);                	\
     })              
 
+#define PM_RNGCPY(pm_dst, sz)                  		\
+    ({                                              	\
+            PM_TRACE("%d:%llu:%s:%p:%lu:%s:%d\n",    	\
+			TENTRY_ID,		    	\
+                        PM_WRT_MARKER,              	\
+                        (pm_dst),                   	\
+                        (unsigned long)sz,          	\
+                        LOC1,                   	\
+                        LOC2);                  	\
+    })              
+
 #define PM_STRCPY(pm_dst, src)                      	\
     ({                                              	\
             PM_TRACE("%d:%llu:%s:%p:%u:%s:%d\n",     	\

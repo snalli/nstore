@@ -2121,9 +2121,11 @@ class btree {
         // move items and put pointer to child node into correct slot
         BTREE_ASSERT(slot >= 0 && slot <= inner->slotuse);
 
+	PM_RNGCPY((inner->slotkey + inner->slotuse + 1), ((inner->slotuse)-(slot)));
         std::copy_backward(inner->slotkey + slot,
                            inner->slotkey + inner->slotuse,
                            inner->slotkey + inner->slotuse + 1);
+	PM_RNGCPY((inner->childid + inner->slotuse + 2), ((inner->slotuse+1)-(slot)));
         std::copy_backward(inner->childid + slot,
                            inner->childid + inner->slotuse + 1,
                            inner->childid + inner->slotuse + 2);
@@ -2158,6 +2160,7 @@ class btree {
       // move items and put data item into correct data slot
       BTREE_ASSERT(slot >= 0 && slot <= leaf->slotuse);
 
+      PM_RNGCPY((leaf->slotkey + leaf->slotuse + 1),((leaf->slotuse)-(slot)));
       std::copy_backward(leaf->slotkey + slot, leaf->slotkey + leaf->slotuse,
                          leaf->slotkey + leaf->slotuse + 1);
       /*
@@ -2168,6 +2171,7 @@ class btree {
 						<= LIBPM + PMSIZE ? 1 : 0));
       */
 
+      PM_RNGCPY((leaf->slotdata + leaf->slotuse + 1),((leaf->slotuse)-(slot)));
       data_copy_backward(leaf->slotdata + slot, leaf->slotdata + leaf->slotuse,
                          leaf->slotdata + leaf->slotuse + 1);
       /*
@@ -3282,8 +3286,10 @@ class btree {
 
     BTREE_ASSERT(right->slotuse + shiftnum < leafslotmax);
 
+    PM_RNGCPY((right->slotkey + right->slotuse + shiftnum),(right->slotuse));
     std::copy_backward(right->slotkey, right->slotkey + right->slotuse,
                        right->slotkey + right->slotuse + shiftnum);
+    PM_RNGCPY((right->slotdata + right->slotuse + shiftnum),(right->slotuse));
     data_copy_backward(right->slotdata, right->slotdata + right->slotuse,
                        right->slotdata + right->slotuse + shiftnum);
 
@@ -3329,8 +3335,10 @@ class btree {
 
     BTREE_ASSERT(right->slotuse + shiftnum < innerslotmax);
 
+    PM_RNGCPY((right->slotkey + right->slotuse + shiftnum), (right->slotuse)),
     std::copy_backward(right->slotkey, right->slotkey + right->slotuse,
                        right->slotkey + right->slotuse + shiftnum);
+    PM_RNGCPY((right->childid + right->slotuse + 1 + shiftnum), (right->slotuse + 1)),
     std::copy_backward(right->childid, right->childid + right->slotuse + 1,
                        right->childid + right->slotuse + 1 + shiftnum);
 
