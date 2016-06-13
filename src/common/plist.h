@@ -22,7 +22,7 @@ class plist {
   plist()
       : head(NULL),
         tail(NULL),
-        activate(false) {
+        activate(true) { // Why would not want to activate ?
     head = (struct node**) pmalloc(sizeof(struct node*));//new (struct node*);
     tail = (struct node**) pmalloc(sizeof(struct node*));//new (struct node*);
     PM_EQU(((*head)), (NULL));
