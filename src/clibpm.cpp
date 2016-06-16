@@ -95,6 +95,7 @@ void fatal(int err, const char *file, int line, const char *func,
   exit(1);
 }
 
+/*
 struct clump {
   size_t size;  // size of the clump
   size_t prevsize;  // size of previous (lower) clump
@@ -103,6 +104,7 @@ struct clump {
     void *ptr_;
   } ons[PMEM_NUM_ON];
 };
+*/
 
 // pool header kept at a known location in each memory-mapped file
 struct pool_header {
@@ -113,22 +115,6 @@ struct pool_header {
 
 // Global memory pool
 void* pmp;
-
-// definitions used internally by this implementation
-#define PMEM_SIGNATURE "*PMEMALLOC_POOL"
-#define PMEM_PAGE_SIZE 4096 /* size of next three sections */
-#define PMEM_NULL_OFFSET 0  /* offset of NULL page (unmapped) */
-#define PMEM_STATIC_OFFSET 4096 /* offset of static area */
-#define PMEM_RED_OFFSET 8192  /* offset of red zone page (unmapped) */
-#define PMEM_HDR_OFFSET 12288 /* offset of pool header */
-#define PMEM_CLUMP_OFFSET 16384 /* offset of first clump */
-#define PMEM_MIN_POOL_SIZE (1024 * 1024)
-#define PMEM_CHUNK_SIZE 64  /* alignment/granularity for all allocations */
-#define PMEM_STATE_MASK 63  /* for storing state in size lower bits */
-#define PMEM_STATE_FREE 0 /* free clump */
-#define PMEM_STATE_RESERVED 1 /* reserved clump */
-#define PMEM_STATE_ACTIVE 2 /* active (allocated) clump */
-#define PMEM_STATE_UNUSED 3 /* must be highest value + 1 */
 
 // display pmem pool
 void pmemalloc_display() {
@@ -493,6 +479,7 @@ void *pmemalloc_reserve(size_t size) {
 }
 
 // pmemalloc_activate -- atomically persist memory, mark in-use, store pointers
+/*
 void pmemalloc_activate_helper(void *abs_ptr) {
   struct clump *clp;
   size_t sz;
@@ -515,7 +502,7 @@ void pmemalloc_activate(void *abs_ptr) {
   pmemalloc_activate_helper(abs_ptr);
   //pmp_mutex.unlock();
 }
-
+*/
 // pmemalloc_free -- free memory, find adjacent free blocks and coalesce them
 void pmemalloc_free(void *abs_ptr_) {
 

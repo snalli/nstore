@@ -62,6 +62,22 @@ namespace storage {
 // size of the static area returned by pmem_static_area()
 #define PMEM_STATIC_SIZE 4096
 
+/* definitions used internally by this implementation */
+#define PMEM_SIGNATURE "*PMEMALLOC_POOL"
+#define PMEM_PAGE_SIZE 4096 /* size of next three sections */
+#define PMEM_NULL_OFFSET 0  /* offset of NULL page (unmapped) */
+#define PMEM_STATIC_OFFSET 4096 /* offset of static area */
+#define PMEM_RED_OFFSET 8192  /* offset of red zone page (unmapped) */
+#define PMEM_HDR_OFFSET 12288 /* offset of pool header */
+#define PMEM_CLUMP_OFFSET 16384 /* offset of first clump */
+#define PMEM_MIN_POOL_SIZE (1024 * 1024)
+#define PMEM_CHUNK_SIZE 64  /* alignment/granularity for all allocations */
+#define PMEM_STATE_MASK 63  /* for storing state in size lower bits */
+#define PMEM_STATE_FREE 0 /* free clump */
+#define PMEM_STATE_RESERVED 1 /* reserved clump */
+#define PMEM_STATE_ACTIVE 2 /* active (allocated) clump */
+#define PMEM_STATE_UNUSED 3 /* must be highest value + 1 */
+
 /* latency in ns */
 #define PCOMMIT_LATENCY 100
 
@@ -79,6 +95,16 @@ struct static_info {
 };
 
 extern struct static_info* sp;
+
+struct clump {
+  size_t size;  // size of the clump
+  size_t prevsize;  // size of previous (lower) clump
+  struct {
+    off_t off;
+    void *ptr_;
+  } ons[PMEM_NUM_ON];
+};
+
 
 #define ABS_PTR(p) ((decltype(p))(pmp + (uintptr_t)p))
 #define REL_PTR(p) ((decltype(p))((uintptr_t)p - (uintptr_t)pmp))
@@ -114,11 +140,31 @@ static inline void pmem_flush_cache(void *addr, size_t len,
 }
 
 
+/*
 static inline void pmem_persist(void *addr, size_t len, int flags) {
   pmem_flush_cache(addr, len, flags);
   PM_FENCE();
   __builtin_ia32_sfence();
 }
+*/
+
+#define pmem_persist(addr, len, flags)		PM_FENCE()
+
+#define pmemalloc_activate_helper(abs_ptr) 					\
+	({									\
+		struct clump *clp;						\
+  		size_t sz;							\
+  		DEBUG("ptr_=%lx", abs_ptr);					\
+  		clp = (struct clump *) ((uintptr_t) abs_ptr - PMEM_CHUNK_SIZE);	\
+  		ASSERTeq(clp->size & PMEM_STATE_MASK, PMEM_STATE_RESERVED);	\
+  		sz = clp->size & ~PMEM_STATE_MASK;				\
+  		pmem_persist(abs_ptr, clp->size - PMEM_CHUNK_SIZE, 0);		\
+  		PM_EQU((clp->size), (sz | PMEM_STATE_ACTIVE));			\
+		pmem_persist(clp, sizeof(*clp), 0);				\
+	})
+
+#define pmemalloc_activate(abs_ptr)		\
+	pmemalloc_activate_helper(abs_ptr)
 
 void debug(const char *file, int line, const char *func, const char *fmt, ...);
 void fatal(int err, const char *file, int line, const char *func,
@@ -127,7 +173,7 @@ void fatal(int err, const char *file, int line, const char *func,
 void *pmemalloc_init(const char *path, size_t size);
 void *pmemalloc_static_area();
 void *pmemalloc_reserve(size_t size);
-void pmemalloc_activate(void *abs_ptr_);
+// void pmemalloc_activate(void *abs_ptr_);
 void pmemalloc_free(void *abs_ptr_);
 void pmemalloc_check(const char *path);
 unsigned int get_next_pp();
