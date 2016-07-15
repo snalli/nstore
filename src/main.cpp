@@ -262,7 +262,6 @@ int main(int argc, char **argv) {
   storage::config state;
   parse_arguments(argc, argv, state);
   state.sp = storage::sp;
-
   storage::coordinator cc(state);
 
                 pthread_spin_lock(&tbuf_lock);

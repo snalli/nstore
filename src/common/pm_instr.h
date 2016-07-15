@@ -44,66 +44,68 @@ extern pthread_spinlock_t tbuf_lock;
 extern int mtm_enable_trace;
 extern int mtm_debug_buffer;
 extern struct timeval glb_time;
+extern unsigned long long start_buf_drain, end_buf_drain, buf_drain_period;
 extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
 
 
-#define time_since_start				\
-	({						\
-		gettimeofday(&mtm_time, NULL);		\
-		((1000000*mtm_time.tv_sec + 		\
-				mtm_time.tv_usec)	\
-		- (glb_start_time));			\
+#define time_since_start							\
+	({									\
+		gettimeofday(&mtm_time, NULL);					\
+		(((1000000*mtm_time.tv_sec + 					\
+				mtm_time.tv_usec)				\
+		- (glb_start_time)) - buf_drain_period);			\
 	})
 
-#define TENTRY_ID					\
-	(mtm_tid == -1 ? 				\
-		({mtm_tid = syscall(SYS_gettid); mtm_tid;}) : mtm_tid), \
+#define TENTRY_ID								\
+	(mtm_tid == -1 ? 							\
+		({mtm_tid = syscall(SYS_gettid); mtm_tid;}) : mtm_tid), 	\
 	(time_since_start)				
 
 #ifdef _ENABLE_TRACE
-#define pm_trace_print(format, args ...)		\
-    {							\
-	if(mtm_enable_trace) {				\
-	pthread_spin_lock(&tbuf_lock);			\
-       	sprintf(tstr, format, args);    		\
-	tsz = strlen(tstr);				\
-	if(tsz < MAX_TBUF_SZ - tbuf_sz)			\
-	{						\
-		memcpy(tbuf+tbuf_sz, 			\
-				tstr, tsz);		\
-		tbuf_sz += tsz;				\
-	}						\
-	else {						\
-		tbuf_ptr = 0;				\
-		if(mtm_debug_buffer)			\
-		{					\
-			fprintf(m_err, 			\
-			"start_buf_drain - %llu us\n",	\
-				time_since_start);	\
-		}					\
-		while(tbuf_ptr < tbuf_sz)		\
-		{					\
-			tbuf_ptr = tbuf_ptr + 1 + 	\
-				fprintf(m_out,"%s", 	\
-				tbuf + tbuf_ptr);	\
-		}					\
-		tbuf_sz = 0; 				\
-		memset(tbuf,'\0', MAX_TBUF_SZ);		\
-		if(mtm_debug_buffer)			\
-		{					\
-			fprintf(m_err, 			\
-			"end_buf_drain - %llu us\n",	\
-				time_since_start);	\
-		}					\
-		memcpy(tbuf, tstr, tsz);		\
-		tbuf_sz += tsz;				\
-							\
-	}						\
-	pthread_spin_unlock(&tbuf_lock);		\
-	}						\
+#define pm_trace_print(format, args ...)					\
+    {										\
+	if(mtm_enable_trace) {							\
+	pthread_spin_lock(&tbuf_lock);						\
+       	sprintf(tstr, format, args);    					\
+	tsz = strlen(tstr);							\
+	if(tsz < MAX_TBUF_SZ - tbuf_sz)						\
+	{									\
+		memcpy(tbuf+tbuf_sz, 						\
+				tstr, tsz);					\
+		tbuf_sz += tsz;							\
+	}									\
+	else {									\
+		tbuf_ptr = 0;							\
+		if(mtm_debug_buffer)						\
+		{								\
+			fprintf(m_err, 						\
+			"start_buf_drain - %llu us\n",				\
+			(start_buf_drain = time_since_start));			\
+		}								\
+		while(tbuf_ptr < tbuf_sz)					\
+		{								\
+			tbuf_ptr = tbuf_ptr + 1 + 				\
+				fprintf(m_out,"%s", 				\
+				tbuf + tbuf_ptr);				\
+		}								\
+		tbuf_sz = 0; 							\
+		memset(tbuf,'\0', MAX_TBUF_SZ);					\
+		if(mtm_debug_buffer)						\
+		{								\
+			fprintf(m_err, 						\
+			"end_buf_drain - %llu us\n",				\
+			(end_buf_drain = time_since_start));			\
+		}								\
+		memcpy(tbuf, tstr, tsz);					\
+		tbuf_sz += tsz;							\
+		buf_drain_period += (end_buf_drain -				\
+					start_buf_drain) + 1;			\
+	}									\
+	pthread_spin_unlock(&tbuf_lock);					\
+	}									\
     }
 #else
-#define pm_trace_print(args ...)	{;}
+#define pm_trace_print(args ...)		{;}
 #endif
 
 #define PM_TRACE                        pm_trace_print

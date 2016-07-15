@@ -127,8 +127,7 @@ pmem_map(int fd, size_t len) {
   return base;
 }
 
-
-static inline void pmem_flush_cache(void *addr, size_t len,
+static inline void __pmem_flush_cache(void *addr, size_t len,
                                     __attribute((unused)) int flags) {
   uintptr_t uptr = (uintptr_t) addr & ~(ALIGN - 1);
   uintptr_t end = (uintptr_t) addr + len;
@@ -140,15 +139,26 @@ static inline void pmem_flush_cache(void *addr, size_t len,
 }
 
 
-/*
-static inline void pmem_persist(void *addr, size_t len, int flags) {
-  pmem_flush_cache(addr, len, flags);
+static inline void __pmem_persist(void *addr, size_t len, int flags) {
+  __pmem_flush_cache(addr, len, flags);
   PM_FENCE();
   __builtin_ia32_sfence();
 }
-*/
 
-#define pmem_persist(addr, len, flags)		PM_FENCE()
+#define pmem_flush_cache(addr, len, flags)					\
+	({									\
+  		uintptr_t uptr = (uintptr_t) addr & ~(ALIGN - 1);		\
+  		uintptr_t end = (uintptr_t) addr + len;				\
+  		for (; uptr < end; uptr += ALIGN) {				\
+			PM_FLUSH(((void*)uptr), ALIGN, ALIGN);			\
+  		}								\
+	})
+#define pmem_persist(addr, len, flags)						\
+	({									\
+  		pmem_flush_cache(addr, len, flags);				\
+		PM_FENCE();							\
+	})
+		
 
 #define pmemalloc_activate_helper(abs_ptr) 					\
 	({									\

@@ -79,6 +79,8 @@ ycsb_benchmark::ycsb_benchmark(config _conf, unsigned int tid, database* _db,
   // Partition workload
   num_keys = conf.num_keys / conf.num_executors;
   num_txns = conf.num_txns / conf.num_executors;
+  std::cerr << "conf.num_txns :: " << conf.num_txns << std::endl;
+  std::cerr << "conf.num_exec :: " << conf.num_executors << std::endl;
 
   // Initialization mode
   if (sp->init == 0) {
