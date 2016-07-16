@@ -49,6 +49,7 @@ class config {
 
   int num_keys;
   int num_txns;
+  int is_trace_enabled;
 
   bool single;
   int num_executors;

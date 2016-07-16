@@ -247,12 +247,16 @@ void opt_wal_engine::load(const statement& st) {
 }
 
 void opt_wal_engine::txn_begin() {
+	PM_START_TX();
 }
 
 void opt_wal_engine::txn_end(__attribute__((unused)) bool commit) {
 
   if (read_only)
-    return;
+  {
+	PM_END_TX();
+	return;
+  }
 
   // Clear commit_free list
   for (void* ptr : commit_free_list) {
@@ -264,7 +268,9 @@ void opt_wal_engine::txn_end(__attribute__((unused)) bool commit) {
   std::vector<char*> undo_log = pm_log->get_data();
   for (char* ptr : undo_log)
     delete ptr;
-  pm_log->clear(); PM_FENCE();/* Why doesn't anyone bother to flush and fence at the end of a txn ? */
+  pm_log->clear(); 
+  PM_FENCE();
+  PM_END_TX();
 
 }
 

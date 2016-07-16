@@ -71,6 +71,7 @@ namespace storage {
 
     // Default Values
     mtm_enable_trace = 0;
+    state.is_trace_enabled = 0;
     state.fs_path = std::string("/dev/shm/");
 
     state.num_keys = 10;
@@ -119,7 +120,7 @@ namespace storage {
 
       switch (c) {
       case 'n':
-	mtm_enable_trace = 1;
+	state.is_trace_enabled = 1;
         std::cerr << "mtm_enable_trace: " << mtm_enable_trace << std::endl;
         break;
       case 'f':

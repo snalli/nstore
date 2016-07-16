@@ -38,13 +38,15 @@ class coordinator {
   }
 
   void execute_bh(benchmark* bh) {
-    // Load
-    bh->load();
-
     // Execute
     bh->execute();
-
   }
+
+  void load_bh(benchmark* bh) {
+    // Load
+    bh->load();
+  }
+
 
   void eval(const config conf) {
     if (!conf.recovery) {
@@ -57,12 +59,26 @@ class coordinator {
 
   void execute(const config conf) {
     std::vector<std::thread> executors;
+    std::vector<std::thread> loaders;
     benchmark** partitions = new benchmark*[num_executors]; // volatile
 
     for (unsigned int i = 0; i < num_executors; i++) {
       database* db = new database(conf, sp, i); // volatile
       partitions[i] = get_benchmark(conf, i, db);
     }
+
+    assert (mtm_enable_trace == 0);
+    std::cerr << "LOADING..." << std::endl;
+
+    for (unsigned int i = 0; i < num_executors; i++)
+      loaders.push_back(
+          std::thread(&coordinator::load_bh, this, partitions[i]));
+
+    for (unsigned int i = 0; i < num_executors; i++)
+      loaders[i].join();
+
+    mtm_enable_trace = conf.is_trace_enabled;
+    std::cerr << "EXECUTING..." << std::endl;
 
     for (unsigned int i = 0; i < num_executors; i++)
       executors.push_back(

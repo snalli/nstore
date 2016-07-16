@@ -359,6 +359,9 @@ extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
                 LOC2);                          	\
     })
 
+#define PM_START_TX	start_txn
+#define PM_END_TX	end_txn
+
 /* PM Persist operations 
  * (done/copied) followed by count to maintain 
  * uniformity with other macros
