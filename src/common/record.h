@@ -19,7 +19,7 @@ class record {
       PM_EQU((sptr), (_sptr));
       PM_EQU((data_len), (_sptr->ser_len));
 	if(this->is_persistent)
-		PM_EQU((data), ((char*) pmalloc(data_len*sizeof(char))));//new char[data_len];
+		PM_EQU((data), ((char*) pmalloc(data_len*sizeof(char)))); /* sizeof(char) = 1 byte */
 	else
 		data = new char[data_len];
   }
@@ -125,16 +125,16 @@ class record {
   void set_varchar(const int field_id, std::string vc_str) {
     //assert(sptr->columns[field_id].type == field_type::VARCHAR);
 	char *vc = NULL;
-	if (is_persistent)
-		vc = (char*) pmalloc((vc_str.size()+1)*sizeof(char));
+	vc = (char*) pmalloc((vc_str.size()+1)*sizeof(char));
+    	PM_STRCPY((vc), (vc_str.c_str()));
+	if(is_persistent)
+	    	PM_MEMCPY((&(data[sptr->columns[field_id].offset])), (&vc), (sizeof(char*)));
 	else
-		vc = new char[vc_str.size() + 1];
+	    	memcpy((&(data[sptr->columns[field_id].offset])), (&vc), (sizeof(char*)));
 
-    PM_STRCPY((vc), (vc_str.c_str()));
     // Pointer assignment. Why do you have to be all fancy ?
     // Here you are addressing the destination via its virtual address,
     // but you could also address it using its name. It would have the same effect.
-    PM_MEMCPY((&(data[sptr->columns[field_id].offset])), (&vc), (sizeof(void*)));
   }
 
   void set_pointer(const int field_id, void* pval) {
@@ -146,7 +146,6 @@ class record {
 	// Never called on DB update path and we don't need pmalloc there.
   void persist_data() {
     pmemalloc_activate(data);
-
     unsigned int field_itr;
     for (field_itr = 0; field_itr < sptr->num_columns; field_itr++) {
       if (sptr->columns[field_itr].inlined == 0) {

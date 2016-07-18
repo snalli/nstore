@@ -98,13 +98,13 @@ namespace storage {
     state.ycsb_update_one = false;
     state.ycsb_field_size = 100;
     state.ycsb_tuples_per_txn = 1;
-    state.ycsb_num_val_fields = 10;
+    state.ycsb_num_val_fields = 5;
 
     state.tpcc_num_warehouses = 2;
     state.tpcc_stock_level_only = false;
 
     state.active_txn_threshold = 10;
-    state.load_batch_size = 50000;
+    state.load_batch_size = 100;
     state.storage_stats = false;
 
     state.test_benchmark_mode = 0;

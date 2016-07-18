@@ -28,7 +28,6 @@ class coordinator {
   coordinator(const config conf) {
     single = conf.single;
     num_executors = conf.num_executors;
-    std::cerr << "b. conf.num_exec :: " << conf.num_executors << std::endl;
     num_txns = conf.num_txns;
 
     for (unsigned int i = 0; i < num_executors; i++) {

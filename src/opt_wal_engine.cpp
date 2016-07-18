@@ -204,7 +204,7 @@ int opt_wal_engine::update(const statement& st) {
     // Update existing record
     before_rec->set_data(field_itr, rec_ptr);
   }
-
+  before_rec->persist_data();
   delete rec_ptr;
   return EXIT_SUCCESS;
 }

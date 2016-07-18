@@ -472,6 +472,7 @@ void *pmemalloc_reserve(size_t size) {
   }
 
   printf("no free memory of size %lu available \n", nsize);
+  die();
   //display();
   errno = ENOMEM;
   exit(EXIT_FAILURE);

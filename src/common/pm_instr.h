@@ -78,9 +78,9 @@ extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
 		tbuf_ptr = 0;							\
 		if(mtm_debug_buffer)						\
 		{								\
-			fprintf(m_err, 						\
-			"start_buf_drain - %llu us\n",				\
-			(start_buf_drain = time_since_start));			\
+			/* fprintf(m_err,*/ 					\
+			/* "start_buf_drain - %llu us\n", */			\
+			((start_buf_drain = time_since_start));			\
 		}								\
 		while(tbuf_ptr < tbuf_sz)					\
 		{								\
@@ -92,9 +92,9 @@ extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
 		memset(tbuf,'\0', MAX_TBUF_SZ);					\
 		if(mtm_debug_buffer)						\
 		{								\
-			fprintf(m_err, 						\
-			"end_buf_drain - %llu us\n",				\
-			(end_buf_drain = time_since_start));			\
+			/* fprintf(m_err, */ 					\
+			/* "end_buf_drain - %llu us\n",	*/			\
+			((end_buf_drain = time_since_start));			\
 		}								\
 		memcpy(tbuf, tstr, tsz);					\
 		tbuf_sz += tsz;							\
