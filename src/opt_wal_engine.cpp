@@ -268,7 +268,7 @@ void opt_wal_engine::txn_end(__attribute__((unused)) bool commit) {
   std::vector<char*> undo_log = pm_log->get_data();
   for (char* ptr : undo_log)
     delete ptr;
-  pm_log->clear(); 
+  pm_log->clear(); // This gives non-volatile accesses
   PM_FENCE();
   PM_END_TX();
 

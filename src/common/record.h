@@ -14,11 +14,14 @@ namespace storage {
 class record {
  public:
 
-  record(schema* _sptr) {
+  record(schema* _sptr, int is_persistent = 0) {
+      this->is_persistent = is_persistent;
       PM_EQU((sptr), (_sptr));
-      PM_EQU((data), (NULL));
       PM_EQU((data_len), (_sptr->ser_len));
-      PM_EQU((data), ((char*) pmalloc(data_len*sizeof(char))));//new char[data_len];
+	if(this->is_persistent)
+		PM_EQU((data), ((char*) pmalloc(data_len*sizeof(char))));//new char[data_len];
+	else
+		data = new char[data_len];
   }
 
   ~record() {
@@ -99,7 +102,8 @@ class record {
       case field_type::INTEGER:
       case field_type::DOUBLE:
       case field_type::VARCHAR:
-        PM_MEMCPY((&(data[offset])), (&(rec_ptr->data[offset])), (len));
+	// data copy and not pointer copy. Going by the variable len field.
+	PM_MEMCPY((&(data[offset])), (&(rec_ptr->data[offset])), (len));
         break;
 
       default:
@@ -120,8 +124,16 @@ class record {
 
   void set_varchar(const int field_id, std::string vc_str) {
     //assert(sptr->columns[field_id].type == field_type::VARCHAR);
-    char* vc = (char*) pmalloc((vc_str.size()+1)*sizeof(char));//new char[vc_str.size() + 1];
+	char *vc = NULL;
+	if (is_persistent)
+		vc = (char*) pmalloc((vc_str.size()+1)*sizeof(char));
+	else
+		vc = new char[vc_str.size() + 1];
+
     PM_STRCPY((vc), (vc_str.c_str()));
+    // Pointer assignment. Why do you have to be all fancy ?
+    // Here you are addressing the destination via its virtual address,
+    // but you could also address it using its name. It would have the same effect.
     PM_MEMCPY((&(data[sptr->columns[field_id].offset])), (&vc), (sizeof(void*)));
   }
 
@@ -130,6 +142,8 @@ class record {
     PM_MEMCPY((&(data[sptr->columns[field_id].offset])), (&pval), (sizeof(void*)));
   }
 
+	// Only called on the DB load path and we need pmalloc on it
+	// Never called on DB update path and we don't need pmalloc there.
   void persist_data() {
     pmemalloc_activate(data);
 
@@ -146,6 +160,7 @@ class record {
   schema* sptr;
   char* data;
   size_t data_len;
+  int is_persistent = 0;
 };
 
 }

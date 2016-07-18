@@ -5,25 +5,18 @@
 namespace storage {
 
 class usertable_record : public record {
- public:
-  usertable_record(schema* _sptr, int key, const std::string& val,
-                   int num_val_fields, bool update_one)
-      : record(_sptr) {
+	public:
 
-    set_int(0, key);
+	usertable_record(schema* _sptr, int key, const std::string& val,
+                   int num_val_fields, bool update_one, int is_persistent = 0)
+	: record(_sptr, is_persistent) {
 
-    if (val.empty())
-      return;
-
-    if (1 || !update_one) {
-      for (int itr = 1; itr <= num_val_fields; itr++) {
-        set_varchar(itr, val);
-      }
-    } else
-	die();
-      set_varchar(1, val);
-  }
-
+		set_int(0, key);
+		if (val.empty())
+			return;
+		for (int itr = 1; itr <= num_val_fields; itr++)
+        		set_varchar(itr, val);
+	}
 };
 
 // USERTABLE
@@ -140,10 +133,11 @@ void ycsb_benchmark::load() {
 
     // LOAD
     int key = txn_itr;
+    int is_persistent = 1;
     std::string value = get_rand_astring(conf.ycsb_field_size);
 
     record* rec_ptr = new ((record*) pmalloc(sizeof(usertable_record))) usertable_record(usertable_schema, key, value,
-                                           					conf.ycsb_num_val_fields, false);
+                                           					conf.ycsb_num_val_fields, false, is_persistent);
 
     statement st(txn_id, operation_type::Insert, USER_TABLE_ID, rec_ptr);
 
@@ -171,10 +165,11 @@ void ycsb_benchmark::do_update(engine* ee) {
   for (int stmt_itr = 0; stmt_itr < conf.ycsb_tuples_per_txn; stmt_itr++) {
 
     int key = zipf_dist[zipf_dist_offset + stmt_itr];
-
-    record* rec_ptr = new ((record*) pmalloc(sizeof(usertable_record))) usertable_record(user_table_schema, key, updated_val,
-                                           					conf.ycsb_num_val_fields,
-                                           					conf.ycsb_update_one);
+    int is_persistent = 0;
+	// The assumption of homogeneous memory has allowed you to reuse code.
+    record* rec_ptr = new usertable_record(user_table_schema, key, updated_val,
+                          				conf.ycsb_num_val_fields,
+                                 			conf.ycsb_update_one, is_persistent);
 
     statement st(txn_id, operation_type::Update, USER_TABLE_ID, rec_ptr,
                  update_field_ids);
