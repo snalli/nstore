@@ -262,7 +262,7 @@ void opt_wal_engine::txn_end(__attribute__((unused)) bool commit) {
   for (void* ptr : commit_free_list) {
     delete (char*) ptr;
   }
-  commit_free_list.clear();
+  commit_free_list.clear(); // STL Vector, not plist
 
   // Clear log
   std::vector<char*> undo_log = pm_log->get_data();

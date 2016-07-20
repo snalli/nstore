@@ -154,7 +154,29 @@ static inline void __pmem_persist(void *addr, size_t len, int flags) {
   		}								\
 	})
 #define pmem_persist(addr, len, flags)						\
-	({									\
+	({/*									\
+    		if (!(LIBPM <= (unsigned long long) addr &&			\
+			(unsigned long long) addr <= LIBPM + PMSIZE)) 		\
+		{								\
+			fprintf(stderr, "%s:%d %p !<= %p !<= %p\n", 		\
+						__func__,__LINE__,		\
+						((void*)LIBPM),			\
+						((void*)addr),			\
+						((void*)LIBPM+PMSIZE));		\
+	    		assert (LIBPM <= (unsigned long long) addr &&		\
+			(unsigned long long) addr <= LIBPM + PMSIZE);		\
+		}								\
+    		if (!(LIBPM <= (unsigned long long) (addr+len) &&		\
+			(unsigned long long) (addr+len) <= LIBPM + PMSIZE))	\
+		{								\
+			fprintf(stderr, "%s:%d %p !<= %p !<= %p\n", 		\
+						__func__,__LINE__,		\
+						((void*)LIBPM),			\
+						((void*)addr+len),		\
+						((void*)LIBPM+PMSIZE));		\
+    			assert (LIBPM <= (unsigned long long) (addr+len) &&	\
+			(unsigned long long) (addr+len) <= LIBPM + PMSIZE);	\
+		} */								\
   		pmem_flush_cache(addr, len, flags);				\
 		PM_FENCE();							\
 	})
@@ -165,6 +187,17 @@ static inline void __pmem_persist(void *addr, size_t len, int flags) {
 		struct clump *clp;						\
   		size_t sz;							\
   		DEBUG("ptr_=%lx", abs_ptr);					\
+    		if (!(LIBPM <= (unsigned long long) abs_ptr &&			\
+			(unsigned long long) abs_ptr <= LIBPM + PMSIZE))	\
+		{								\
+			fprintf(stderr, "%s:%d %p !<= %p !<= %p\n", 		\
+						__func__,__LINE__,		\
+						((void*)LIBPM),			\
+						((void*)abs_ptr),		\
+						((void*)LIBPM+PMSIZE));		\
+    			assert (LIBPM <= (unsigned long long) abs_ptr &&	\
+			(unsigned long long) abs_ptr <= LIBPM + PMSIZE);	\
+		}								\
   		clp = (struct clump *) ((uintptr_t) abs_ptr - PMEM_CHUNK_SIZE);	\
   		ASSERTeq(clp->size & PMEM_STATE_MASK, PMEM_STATE_RESERVED);	\
   		sz = clp->size & ~PMEM_STATE_MASK;				\

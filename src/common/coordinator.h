@@ -126,7 +126,6 @@ class coordinator {
         break;
 
       case benchmark_type::TPCC:
-	die();
         LOG_INFO("TPCC");
         bh = new tpcc_benchmark(state, tid, db, &tms[tid], &sps[tid]); // volatile
         break;

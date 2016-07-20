@@ -87,9 +87,9 @@ class warehouse_record : public record {
  public:
   warehouse_record(schema* sptr, int w_id, const std::string& w_name,
                    const std::string& w_st, const std::string& w_zip,
-                   const double w_tax, const double w_ytd)
+                   const double w_tax, const double w_ytd, int is_persistent = 0)
 
-      : record(sptr) {
+      : record(sptr, is_persistent) {
 
     set_int(0, w_id);
 
@@ -152,10 +152,10 @@ table* tpcc_benchmark::create_warehouse() {
   }
 
   // SCHEMA
-  schema* warehouse_schema = new schema(cols);
+  schema* warehouse_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(warehouse_schema);
 
-  table* warehouse = new table("warehouse", warehouse_schema, 1, conf, sp);
+  table* warehouse = new ((table*) pmalloc(sizeof(table))) table("warehouse", warehouse_schema, 1, conf, sp);
   pmemalloc_activate(warehouse);
 
   // PRIMARY INDEX
@@ -163,10 +163,10 @@ table* tpcc_benchmark::create_warehouse() {
     cols[itr].enabled = 0;
   }
 
-  schema* warehouse_index_schema = new schema(cols);
+  schema* warehouse_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(warehouse_index_schema);
 
-  table_index* key_index = new table_index(warehouse_index_schema, cols.size(),
+  table_index* key_index = new ((table_index*) pmalloc(sizeof(table_index))) table_index(warehouse_index_schema, cols.size(),
                                            conf, sp);
   pmemalloc_activate(key_index);
   warehouse->indices->push_back(key_index);
@@ -179,9 +179,9 @@ class district_record : public record {
  public:
   district_record(schema* sptr, int d_id, int d_w_id, const std::string& d_name,
                   const std::string& d_st, const std::string& d_zip,
-                  const double d_tax, const double d_ytd, int d_next_o_id)
+                  const double d_tax, const double d_ytd, int d_next_o_id, int is_persistent = 0)
 
-      : record(sptr) {
+      : record(sptr, is_persistent) {
 
     set_int(0, d_id);
     set_int(1, d_w_id);
@@ -252,10 +252,10 @@ table* tpcc_benchmark::create_district() {
   cols.push_back(field);
 
   // SCHEMA
-  schema* district_schema = new schema(cols);
+  schema* district_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(district_schema);
 
-  table* district = new table("district", district_schema, 1, conf, sp);
+  table* district = new ((table*) pmalloc(sizeof(table))) table("district", district_schema, 1, conf, sp);
   pmemalloc_activate(district);
 
   // PRIMARY INDEX
@@ -263,10 +263,10 @@ table* tpcc_benchmark::create_district() {
     cols[itr].enabled = 0;
   }
 
-  schema* district_index_schema = new schema(cols);
+  schema* district_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(district_index_schema);
 
-  table_index* key_index = new table_index(district_index_schema, cols.size(),
+  table_index* key_index = new ((table_index*) pmalloc(sizeof(table_index))) table_index(district_index_schema, cols.size(),
                                            conf, sp);
   pmemalloc_activate(key_index);
   district->indices->push_back(key_index);
@@ -278,8 +278,8 @@ table* tpcc_benchmark::create_district() {
 class item_record : public record {
  public:
   item_record(schema* sptr, int i_id, int i_im_id, const std::string& i_name,
-              const double i_price)
-      : record(sptr) {
+              const double i_price, int is_persistent = 0)
+      : record(sptr, is_persistent) {
 
     set_int(0, i_id);
     set_int(1, i_im_id);
@@ -327,10 +327,10 @@ table* tpcc_benchmark::create_item() {
   cols.push_back(field);
 
   // SCHEMA
-  schema* item_schema = new schema(cols);
+  schema* item_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(item_schema);
 
-  table* item = new table("item", item_schema, 1, conf, sp);
+  table* item = new ((table*) pmalloc(sizeof(table))) table("item", item_schema, 1, conf, sp);
   pmemalloc_activate(item);
 
   // PRIMARY INDEX
@@ -338,10 +338,10 @@ table* tpcc_benchmark::create_item() {
     cols[itr].enabled = 0;
   }
 
-  schema* item_index_schema = new schema(cols);
+  schema* item_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(item_index_schema);
 
-  table_index* key_index = new table_index(item_index_schema, cols.size(), conf,
+  table_index* key_index = new ((table_index*) pmalloc(sizeof(table_index))) table_index(item_index_schema, cols.size(), conf,
                                            sp);
   pmemalloc_activate(key_index);
   item->indices->push_back(key_index);
@@ -358,8 +358,8 @@ class customer_record : public record {
                   const double c_credit_lim, const double c_ts,
                   const double c_discount, const double c_balance,
                   const double c_ytd, const int c_payment_cnt,
-                  const int c_delivery_cnt, std::string c_data)
-      : record(sptr) {
+                  const int c_delivery_cnt, std::string c_data, int is_persistent = 0)
+      : record(sptr, is_persistent) {
 
     set_int(0, c_id);
     set_int(1, c_d_id);
@@ -470,10 +470,10 @@ table* tpcc_benchmark::create_customer() {
   cols.push_back(field);
 
   // SCHEMA
-  schema* customer_schema = new schema(cols);
+  schema* customer_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(customer_schema);
 
-  table* customer = new table("customer", customer_schema, 2, conf, sp);
+  table* customer = new ((table*) pmalloc(sizeof(table))) table("customer", customer_schema, 2, conf, sp);
   pmemalloc_activate(customer);
 
   // PRIMARY INDEX
@@ -481,10 +481,10 @@ table* tpcc_benchmark::create_customer() {
     cols[itr].enabled = 0;
   }
 
-  schema* customer_index_schema = new schema(cols);
+  schema* customer_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(customer_index_schema);
 
-  table_index* p_index = new table_index(customer_index_schema, cols.size(),
+  table_index* p_index = new ((table_index*) pmalloc(sizeof(table_index))) table_index(customer_index_schema, cols.size(),
                                          conf, sp);
   pmemalloc_activate(p_index);
   customer->indices->push_back(p_index);
@@ -493,10 +493,10 @@ table* tpcc_benchmark::create_customer() {
   cols[0].enabled = 0;
   cols[3].enabled = 1;
 
-  schema* customer_name_index_schema = new schema(cols);
+  schema* customer_name_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(customer_name_index_schema);
 
-  table_index* s_index = new table_index(customer_name_index_schema,
+  table_index* s_index = new ((table_index*) pmalloc(sizeof(table_index))) table_index(customer_name_index_schema,
                                          cols.size(), conf, sp);
   pmemalloc_activate(s_index);
   customer->indices->push_back(s_index);
@@ -519,8 +519,8 @@ class history_record : public record {
  public:
   history_record(schema* sptr, int h_c_id, int h_c_d_id, int h_c_w_id,
                  int h_d_id, int h_w_id, const double h_ts,
-                 const double h_amount, const std::string& h_data)
-      : record(sptr) {
+                 const double h_amount, const std::string& h_data, int is_persistent = 0)
+      : record(sptr, is_persistent) {
 
     set_int(0, h_c_id);
     set_int(1, h_c_d_id);
@@ -573,10 +573,10 @@ table* tpcc_benchmark::create_history() {
   cols.push_back(field);
 
   // SCHEMA
-  schema* history_schema = new schema(cols);
+  schema* history_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(history_schema);
 
-  table* history = new table("history", history_schema, 1, conf, sp);
+  table* history = new ((table*) pmalloc(sizeof(table))) table("history", history_schema, 1, conf, sp);
   pmemalloc_activate(history);
 
   // PRIMARY INDEX
@@ -584,10 +584,10 @@ table* tpcc_benchmark::create_history() {
     cols[itr].enabled = 0;
   }
 
-  schema* history_index_schema = new schema(cols);
+  schema* history_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(history_index_schema);
 
-  table_index* p_index = new table_index(history_index_schema, cols.size(),
+  table_index* p_index = new ((table_index*) pmalloc(sizeof(table_index*))) table_index(history_index_schema, cols.size(),
                                          conf, sp);
   pmemalloc_activate(p_index);
   history->indices->push_back(p_index);
@@ -601,8 +601,8 @@ class stock_record : public record {
  public:
   stock_record(schema* sptr, int s_i_id, int s_w_id, int s_quantity,
                std::vector<std::string> s_dist, int s_ytd, int s_order_cnt,
-               int s_remote_cnt, const std::string& s_data)
-      : record(sptr) {
+               int s_remote_cnt, const std::string& s_data, int is_persistent = 0)
+      : record(sptr, is_persistent) {
 
     set_int(0, s_i_id);
     set_int(1, s_w_id);
@@ -672,10 +672,10 @@ table* tpcc_benchmark::create_stock() {
   cols.push_back(field);
 
   // SCHEMA
-  schema* stock_schema = new schema(cols);
+  schema* stock_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(stock_schema);
 
-  table* stock = new table("stock", stock_schema, 1, conf, sp);
+  table* stock = new ((table*) pmalloc(sizeof(table))) table("stock", stock_schema, 1, conf, sp);
   pmemalloc_activate(stock);
 
   // PRIMARY INDEX
@@ -683,10 +683,10 @@ table* tpcc_benchmark::create_stock() {
     cols[itr].enabled = 0;
   }
 
-  schema* stock_index_schema = new schema(cols);
+  schema* stock_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(stock_index_schema);
 
-  table_index* p_index = new table_index(stock_index_schema, cols.size(), conf,
+  table_index* p_index = new ((table_index*) pmalloc(sizeof(table_index))) table_index(stock_index_schema, cols.size(), conf,
                                          sp);
   pmemalloc_activate(p_index);
   stock->indices->push_back(p_index);
@@ -707,8 +707,8 @@ class orders_record : public record {
  public:
   orders_record(schema* sptr, int o_id, int o_c_id, int o_d_id, int o_w_id,
                 double o_entry_ts, int o_carrier_id, int o_ol_cnt,
-                int o_all_local)
-      : record(sptr) {
+                int o_all_local, int is_persistent = 0)
+      : record(sptr, is_persistent) {
 
     set_int(0, o_id);
     set_int(1, o_c_id);
@@ -766,10 +766,10 @@ table* tpcc_benchmark::create_orders() {
   }
 
   // SCHEMA
-  schema* orders_schema = new schema(cols);
+  schema* orders_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(orders_schema);
 
-  table* orders = new table("orders", orders_schema, 2, conf, sp);
+  table* orders = new ((table*) pmalloc(sizeof(table))) table("orders", orders_schema, 2, conf, sp);
   pmemalloc_activate(orders);
 
   // PRIMARY INDEX
@@ -778,10 +778,10 @@ table* tpcc_benchmark::create_orders() {
   }
   cols[1].enabled = 0;
 
-  schema* p_index_schema = new schema(cols);
+  schema* p_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(p_index_schema);
 
-  table_index* p_index = new table_index(p_index_schema, cols.size(), conf, sp);
+  table_index* p_index = new ((table_index*) pmalloc(sizeof(table_index))) table_index(p_index_schema, cols.size(), conf, sp);
   pmemalloc_activate(p_index);
   orders->indices->push_back(p_index);
 
@@ -789,10 +789,10 @@ table* tpcc_benchmark::create_orders() {
   cols[0].enabled = 0;
   cols[1].enabled = 1;
 
-  schema* s_index_schema = new schema(cols);
+  schema* s_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(s_index_schema);
 
-  table_index* s_index = new table_index(s_index_schema, cols.size(), conf, sp);
+  table_index* s_index = new ((table_index*) pmalloc(sizeof(table_index))) table_index(s_index_schema, cols.size(), conf, sp);
   pmemalloc_activate(s_index);
   orders->indices->push_back(s_index);
 
@@ -803,8 +803,8 @@ table* tpcc_benchmark::create_orders() {
 
 class new_order_record : public record {
  public:
-  new_order_record(schema* sptr, int no_o_id, int no_d_id, int no_w_id)
-      : record(sptr) {
+  new_order_record(schema* sptr, int no_o_id, int no_d_id, int no_w_id, int is_persistent = 0)
+      : record(sptr, is_persistent) {
 
     set_int(0, no_o_id);
     set_int(1, no_d_id);
@@ -839,20 +839,20 @@ table* tpcc_benchmark::create_new_order() {
   }
 
   // SCHEMA
-  schema* new_order_schema = new schema(cols);
+  schema* new_order_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(new_order_schema);
 
-  table* new_order = new table("new_order", new_order_schema, 1, conf, sp);
+  table* new_order = new ((table*) pmalloc(sizeof(table))) table("new_order", new_order_schema, 1, conf, sp);
   pmemalloc_activate(new_order);
 
   // PRIMARY INDEX
   // XXX alter pkey
   cols[0].enabled = 0;
 
-  schema* new_order_index_schema = new schema(cols);
+  schema* new_order_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(new_order_index_schema);
 
-  table_index* new_order_index = new table_index(new_order_index_schema,
+  table_index* new_order_index = new ((table_index*) pmalloc(sizeof(table_index))) table_index(new_order_index_schema,
                                                  cols.size(), conf, sp);
   pmemalloc_activate(new_order_index);
   new_order->indices->push_back(new_order_index);
@@ -867,8 +867,8 @@ class order_line_record : public record {
   order_line_record(schema* sptr, int ol_o_id, int ol_d_id, int ol_w_id,
                     int ol_number, int ol_i_id, int ol_supply_w_id,
                     double ol_delivery_ts, int ol_quantity, double ol_amount,
-                    const std::string& ol_info)
-      : record(sptr) {
+                    const std::string& ol_info, int is_persistent = 0)
+      : record(sptr, is_persistent) {
 
     set_int(0, ol_o_id);
     set_int(1, ol_d_id);
@@ -934,10 +934,10 @@ table* tpcc_benchmark::create_order_line() {
   cols.push_back(field);
 
   // SCHEMA
-  schema* order_line_schema = new schema(cols);
+  schema* order_line_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(order_line_schema);
 
-  table* order_line = new table("order_line", order_line_schema, 2, conf, sp);
+  table* order_line = new ((table*) pmalloc(sizeof(table))) table("order_line", order_line_schema, 2, conf, sp);
   pmemalloc_activate(order_line);
 
   // PRIMARY INDEX
@@ -945,20 +945,20 @@ table* tpcc_benchmark::create_order_line() {
     cols[itr].enabled = 0;
   }
 
-  schema* p_index_schema = new schema(cols);
+  schema* p_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(p_index_schema);
 
-  table_index* p_index = new table_index(p_index_schema, cols.size(), conf, sp);
+  table_index* p_index = new ((table_index*) pmalloc(sizeof(table_index))) table_index(p_index_schema, cols.size(), conf, sp);
   pmemalloc_activate(p_index);
   order_line->indices->push_back(p_index);
 
   // SECONDARY INDEX
   cols[3].enabled = 0;
 
-  schema* s_index_schema = new schema(cols);
+  schema* s_index_schema = new ((schema*) pmalloc(sizeof(schema))) schema(cols);
   pmemalloc_activate(s_index_schema);
 
-  table_index* s_index = new table_index(s_index_schema, cols.size(), conf, sp);
+  table_index* s_index = new ((table_index*) pmalloc(sizeof(table_index))) table_index(s_index_schema, cols.size(), conf, sp);
   pmemalloc_activate(s_index);
   order_line->indices->push_back(s_index);
 
@@ -985,8 +985,8 @@ void tpcc_benchmark::load_items(engine* ee) {
     std::string name = get_rand_astring(name_len);
     double price = get_rand_double(item_min_price, item_max_price);
 
-    record* rec_ptr = new item_record(item_table_schema, i_itr, i_im_id, name,
-                                      price);
+    record* rec_ptr = new ((record*) pmalloc(sizeof(item_record))) item_record(item_table_schema, i_itr, i_im_id, name,
+                                      price, 1);
 
     std::string key_str = sr.serialize(rec_ptr, item_table_schema);
     //LOG_INFO("item :: %s ", key_str.c_str());
@@ -1027,10 +1027,10 @@ void tpcc_benchmark::load_warehouses(engine* ee) {
     std::string zip = get_rand_astring(zip_len);
     double w_tax = get_rand_double(warehouse_min_tax, warehouse_max_tax);
 
-    record* warehouse_rec_ptr = new warehouse_record(warehouse_table_schema,
+    record* warehouse_rec_ptr = new ((record*) pmalloc(sizeof(warehouse_record))) warehouse_record(warehouse_table_schema,
                                                      w_itr, name, zip, state,
                                                      w_tax,
-                                                     warehouse_initial_ytd);
+                                                     warehouse_initial_ytd, 1);
 
     log_str = sr.serialize(warehouse_rec_ptr, warehouse_table_schema);
     //LOG_INFO("warehouse :: %s ", log_str.c_str());
@@ -1053,11 +1053,11 @@ void tpcc_benchmark::load_warehouses(engine* ee) {
       double d_tax = get_rand_double(warehouse_min_tax, warehouse_max_tax);
       int next_d_o_id = customers_per_district + 1;
 
-      record* district_rec_ptr = new district_record(district_table_schema,
+      record* district_rec_ptr = new ((record*) pmalloc(sizeof(district_record))) district_record(district_table_schema,
                                                      d_itr, w_itr, name, zip,
                                                      state, d_tax,
                                                      district_initial_ytd,
-                                                     next_d_o_id);
+                                                     next_d_o_id, 1);
 
       log_str = sr.serialize(district_rec_ptr, district_table_schema);
       //LOG_INFO("district :: %s", log_str.c_str());
@@ -1085,11 +1085,11 @@ void tpcc_benchmark::load_warehouses(engine* ee) {
         double c_discount = get_rand_double(customers_min_discount,
                                             customers_max_discount);
 
-        record* customer_rec_ptr = new customer_record(
+        record* customer_rec_ptr = new ((record*) pmalloc(sizeof(customer_record))) customer_record(
             customer_table_schema, c_itr, d_itr, w_itr, c_name, c_state, c_zip,
             c_credit, customers_init_credit_lim, c_ts, c_discount,
             customers_init_balance, customers_init_ytd,
-            customers_init_payment_cnt, customers_init_delivery_cnt, c_name);
+            customers_init_payment_cnt, customers_init_delivery_cnt, c_name, 1);
 
         log_str = sr.serialize(customer_rec_ptr, customer_table_schema);
         //LOG_INFO("customer :: %s", log_str.c_str());
@@ -1107,11 +1107,11 @@ void tpcc_benchmark::load_warehouses(engine* ee) {
         int h_d_id = d_itr;
         std::string h_data = get_rand_astring(name_len);
 
-        record* history_rec_ptr = new history_record(history_table_schema,
+        record* history_rec_ptr = new ((record*) pmalloc(sizeof(history_record))) history_record(history_table_schema,
                                                      c_itr, d_itr, w_itr,
                                                      h_w_id, h_d_id, c_ts,
                                                      history_init_amount,
-                                                     h_data);
+                                                     h_data, 1);
 
         log_str = sr.serialize(history_rec_ptr, history_table_schema);
         //LOG_INFO("history :: %s ", log_str.c_str());
@@ -1147,10 +1147,10 @@ void tpcc_benchmark::load_warehouses(engine* ee) {
           o_carrier_id = get_rand_int(orders_min_carrier_id,
                                       orders_max_carrier_id);
 
-        record* orders_rec_ptr = new orders_record(orders_table_schema, o_itr,
+        record* orders_rec_ptr = new ((record*) pmalloc(sizeof(orders_record))) orders_record(orders_table_schema, o_itr,
                                                    c_id, d_itr, w_itr, o_ts,
                                                    o_carrier_id, o_ol_cnt,
-                                                   orders_init_all_local);
+                                                   orders_init_all_local, 1);
 
         log_str = sr.serialize(orders_rec_ptr, orders_table_schema);
         //LOG_INFO("orders ::%s", log_str.c_str());
@@ -1165,8 +1165,8 @@ void tpcc_benchmark::load_warehouses(engine* ee) {
         if (new_order) {
           txn_id++;
 
-          record* new_order_rec_ptr = new new_order_record(
-              new_order_table_schema, o_itr, d_itr, w_itr);
+          record* new_order_rec_ptr = new ((record*) pmalloc(sizeof(new_order_record))) new_order_record(
+              new_order_table_schema, o_itr, d_itr, w_itr, 1);
 
           log_str = sr.serialize(new_order_rec_ptr, new_order_table_schema);
           LOG_INFO("new_order ::%s", log_str.c_str());
@@ -1195,9 +1195,9 @@ void tpcc_benchmark::load_warehouses(engine* ee) {
             ol_delivery_ts = 0;
           }
 
-          record* order_line_rec_ptr = new order_line_record(
+          record* order_line_rec_ptr = new ((record*) pmalloc(sizeof(order_line_record))) order_line_record(
               order_line_table_schema, o_itr, d_itr, w_itr, ol_itr, ol_i_id,
-              ol_supply_w_id, ol_delivery_ts, ol_quantity, ol_amount, ol_data);
+              ol_supply_w_id, ol_delivery_ts, ol_quantity, ol_amount, ol_data, 1);
 
           log_str = sr.serialize(order_line_rec_ptr, order_line_table_schema);
           //LOG_INFO("order_line ::%s", log_str.c_str());
@@ -1238,10 +1238,10 @@ void tpcc_benchmark::load_warehouses(engine* ee) {
       for (int s_d_itr = 0; s_d_itr < stock_dist_count; s_d_itr++)
         s_dist.push_back(std::to_string(s_d_itr) + s_data);
 
-      record* stock_rec_ptr = new stock_record(stock_table_schema, s_i_itr,
+      record* stock_rec_ptr = new ((record*) pmalloc(sizeof(stock_record))) stock_record(stock_table_schema, s_i_itr,
                                                w_itr, s_quantity, s_dist, s_ytd,
                                                s_order_cnt, s_remote_cnt,
-                                               s_data);
+                                               s_data, 1);
 
       log_str = sr.serialize(stock_rec_ptr, stock_table_schema);
       //LOG_INFO("stock ::%s", log_str.c_str());

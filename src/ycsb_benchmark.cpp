@@ -78,7 +78,7 @@ ycsb_benchmark::ycsb_benchmark(config _conf, unsigned int tid, database* _db,
 
   // Initialization mode
   if (sp->init == 0) {
-    //cerr << "Initialization Mode" << endl;
+    std::cerr << "Initialization Mode" << std::endl << std::flush;
     sp->ptrs[0] = _db;
 
     table* usertable = create_usertable(conf);
@@ -86,7 +86,7 @@ ycsb_benchmark::ycsb_benchmark(config _conf, unsigned int tid, database* _db,
 
     sp->init = 1;
   } else {
-    //cerr << "Recovery Mode " << endl;
+    std::cerr << "Recovery Mode " << std::endl << std::flush;
     database* db = (database*) sp->ptrs[0]; // We are reusing old tables
     db->reset(conf, tid);
   }
@@ -166,6 +166,9 @@ void ycsb_benchmark::do_update(engine* ee) {
   for (int stmt_itr = 0; stmt_itr < conf.ycsb_tuples_per_txn; stmt_itr++) {
 
     int key = zipf_dist[zipf_dist_offset + stmt_itr];
+    // int key = txn_id % num_keys; 
+    if(txn_id % 10000 == 0)
+	    std::cerr << tid << "completed " << txn_id << " transactions" << std::endl << std::flush;
     int is_persistent = 0;
 	// The assumption of homogeneous memory has allowed you to reuse code.
     record* rec_ptr = new usertable_record(user_table_schema, key, updated_val,
