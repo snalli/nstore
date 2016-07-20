@@ -1337,8 +1337,8 @@ void tpcc_benchmark::do_delivery(engine* ee) {
       return;
     }
     LOG_INFO("orders :: %s ", orders_str.c_str());
-
-    rec_ptr = sr.deserialize(orders_str, orders_table_schema);
+    // Get a persistent record since we are going to insert it 
+    rec_ptr = sr.deserialize(orders_str, orders_table_schema, 1);
 
     int c_id = std::stoi(rec_ptr->get_data(1));
 
@@ -1357,8 +1357,8 @@ void tpcc_benchmark::do_delivery(engine* ee) {
     // updateOrderLine
     double ol_ts = static_cast<double>(time(NULL));
 
-    rec_ptr = new order_line_record(order_line_table_schema, o_id, d_itr, w_id,
-                                    0, 0, 0, ol_ts, 0, 0, empty);
+    rec_ptr = new ((record*) pmalloc(sizeof(order_line_record))) order_line_record(order_line_table_schema, o_id, d_itr, w_id,
+                                    0, 0, 0, ol_ts, 0, 0, empty, 1);
 
     rec_ptr->set_double(6, ol_delivery_ts);
     field_ids = {6};  // ol_ts
@@ -1404,8 +1404,8 @@ void tpcc_benchmark::do_delivery(engine* ee) {
       return;
     }
     LOG_INFO("customer :: %s ", customer_str.c_str());
-
-    rec_ptr = sr.deserialize(customer_str, customer_table_schema);
+    // Get a persistent record since we are going to insert it into the DB
+    rec_ptr = sr.deserialize(customer_str, customer_table_schema, 1);
 
     double orig_balance = std::stod(rec_ptr->get_data(16));  // balance
     LOG_INFO("orig_balance :: %.2lf ", orig_balance);
@@ -1514,7 +1514,7 @@ void tpcc_benchmark::do_new_order(engine* ee, bool finish) {
   }
   LOG_INFO("district :: %s ", district_str.c_str());
 
-  rec_ptr = sr.deserialize(district_str, district_table_schema);
+  rec_ptr = sr.deserialize(district_str, district_table_schema, 1);
 
   double d_tax = std::stod(rec_ptr->get_data(8));
   int d_next_o_id = std::stoi(rec_ptr->get_data(10));
@@ -1563,8 +1563,8 @@ void tpcc_benchmark::do_new_order(engine* ee, bool finish) {
 
   int o_carrier_id = orders_null_carrier_id;
 
-  rec_ptr = new orders_record(orders_table_schema, o_id, c_id, d_id, w_id,
-                              o_entry_ts, o_carrier_id, o_ol_cnt, o_all_local);
+  rec_ptr = new ((record*) pmalloc(sizeof(orders_record))) orders_record(orders_table_schema, o_id, c_id, d_id, w_id,
+                              o_entry_ts, o_carrier_id, o_ol_cnt, o_all_local, 1);
 
   st = statement(txn_id, operation_type::Insert, ORDERS_TABLE_ID, rec_ptr);
 
@@ -1572,7 +1572,7 @@ void tpcc_benchmark::do_new_order(engine* ee, bool finish) {
 
   // createNewOrder
 
-  rec_ptr = new new_order_record(new_order_table_schema, o_id, d_id, w_id);
+  rec_ptr = new ((record*) pmalloc(sizeof(new_order_record))) new_order_record(new_order_table_schema, o_id, d_id, w_id, 1);
 
   st = statement(txn_id, operation_type::Insert, NEW_ORDER_TABLE_ID, rec_ptr);
 
@@ -1625,7 +1625,7 @@ void tpcc_benchmark::do_new_order(engine* ee, bool finish) {
     }
     LOG_INFO("stock :: %s", stock_str.c_str());
 
-    rec_ptr = sr.deserialize(stock_str, stock_table_schema);
+    rec_ptr = sr.deserialize(stock_str, stock_table_schema, 1);
 
     int s_quantity = std::stoi(rec_ptr->get_data(2));
     int s_ytd = std::stoi(rec_ptr->get_data(13));
@@ -1660,10 +1660,10 @@ void tpcc_benchmark::do_new_order(engine* ee, bool finish) {
 
     int ol_amount = ol_quantity * i_price;
 
-    rec_ptr = new order_line_record(order_line_table_schema, o_id, d_id, w_id,
+    rec_ptr = new ((record*) pmalloc(sizeof(order_line_record))) order_line_record(order_line_table_schema, o_id, d_id, w_id,
                                     ol_number, ol_i_id, ol_supply_w_id,
                                     o_entry_ts, ol_quantity, ol_amount,
-                                    s_ol_data);
+                                    s_ol_data, 1);
 
     st = statement(txn_id, operation_type::Insert, ORDER_LINE_TABLE_ID,
                    rec_ptr);
@@ -1785,8 +1785,7 @@ void tpcc_benchmark::do_order_status(engine* ee) {
   st = statement(txn_id, operation_type::Select, ORDER_LINE_TABLE_ID, rec_ptr,
                  1, order_line_table_schema);
 
-  TIMER(order_line_str = ee->select(st)
-  ;
+  TIMER(order_line_str = ee->select(st);
   )
 
   if (order_line_str.empty()) {
@@ -1917,7 +1916,7 @@ void tpcc_benchmark::do_payment(engine* ee) {
   }
   LOG_INFO("warehouse :: %s ", warehouse_str.c_str());
 
-  rec_ptr = sr.deserialize(warehouse_str, warehouse_table_schema);
+  rec_ptr = sr.deserialize(warehouse_str, warehouse_table_schema, 1);
 
   double w_ytd = std::stod(rec_ptr->get_data(8));
 
@@ -1952,7 +1951,7 @@ void tpcc_benchmark::do_payment(engine* ee) {
 
   LOG_INFO("district :: %s ", district_str.c_str());
 
-  rec_ptr = sr.deserialize(district_str, district_table_schema);
+  rec_ptr = sr.deserialize(district_str, district_table_schema, 1);
 
   double d_ytd = std::stod(rec_ptr->get_data(9));
 
@@ -1982,10 +1981,10 @@ void tpcc_benchmark::do_payment(engine* ee) {
             + std::to_string(w_id) + " " + std::to_string(c_d_id) + " "
             + std::to_string(c_w_id) + " " + std::to_string(h_amount));
 
-    rec_ptr = new customer_record(customer_table_schema, c_id, d_id, w_id,
+    rec_ptr = new ((record*) pmalloc(sizeof(customer_record))) customer_record(customer_table_schema, c_id, d_id, w_id,
                                   empty, empty, empty, empty, 0, 0, 0,
                                   c_balance, c_ytd_payment, c_payment_cnt, 0,
-                                  c_data);
+                                  c_data, 1);
 
     field_ids = {16, 17, 18, 20};
 
@@ -1998,10 +1997,10 @@ void tpcc_benchmark::do_payment(engine* ee) {
 
 // updateGCCustomer
 
-    rec_ptr = new customer_record(customer_table_schema, c_id, d_id, w_id,
+    rec_ptr = new ((record*) pmalloc(sizeof(customer_record))) customer_record(customer_table_schema, c_id, d_id, w_id,
                                   empty, empty, empty, empty, 0, 0, 0,
                                   c_balance, c_ytd_payment, c_payment_cnt, 0,
-                                  empty);
+                                  empty, 1);
 
     field_ids = {16, 17, 18};
 
@@ -2016,8 +2015,8 @@ void tpcc_benchmark::do_payment(engine* ee) {
 
   std::string h_data = std::to_string(w_id) + "    " + std::to_string(d_id);
 
-  rec_ptr = new history_record(history_table_schema, c_id, c_d_id, c_w_id, d_id,
-                               w_id, h_ts, h_amount, h_data);
+  rec_ptr = new ((record*) pmalloc(sizeof(history_record))) history_record(history_table_schema, c_id, c_d_id, c_w_id, d_id,
+                               w_id, h_ts, h_amount, h_data, 1);
 
   st = statement(txn_id, operation_type::Insert, HISTORY_TABLE_ID, rec_ptr);
 

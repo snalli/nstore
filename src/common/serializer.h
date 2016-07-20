@@ -63,55 +63,103 @@ class serializer {
     return output.str();
   }
 
-  record* deserialize(std::string entry_str, schema* sptr) {
+  record* deserialize(std::string entry_str, schema* sptr, int is_persistent = 0) {
     if (entry_str.empty())
       return NULL;
 
-    unsigned int num_columns = sptr->num_columns;
-    record* rec_ptr = new record(sptr);
-    input.clear();
-    input.str(entry_str);
+    if (is_persistent) {
+	    unsigned int num_columns = sptr->num_columns;
+	    record* rec_ptr = new ((record*) pmalloc(sizeof(record))) record(sptr);
+	    input.clear();
+	    input.str(entry_str);
 
-    for (unsigned int itr = 0; itr < num_columns; itr++) {
-      field_info finfo = sptr->columns[itr];
-      bool enabled = finfo.enabled;
+	    for (unsigned int itr = 0; itr < num_columns; itr++) {
+	      field_info finfo = sptr->columns[itr];
+	      bool enabled = finfo.enabled;
 
-      if (enabled) {
-        char type = finfo.type;
-        size_t offset = finfo.offset;
+	      if (enabled) {
+	        char type = finfo.type;
+	        size_t offset = finfo.offset;
 
-        switch (type) {
-          case field_type::INTEGER: {
-            int ival;
-            input >> ival;
-            memcpy(&(rec_ptr->data[offset]), &ival, sizeof(int));
-          }
-            break;
+        	switch (type) {
+	          case field_type::INTEGER: {
+        	    int ival;
+	            input >> ival;
+        	    PM_MEMCPY((&(rec_ptr->data[offset])), (&ival), (sizeof(int)));
+	          }
+        	    break;
 
-          case field_type::DOUBLE: {
-            double dval;
-            input >> dval;
-            memcpy(&(rec_ptr->data[offset]), &dval, sizeof(double));
-          }
-            break;
+	          case field_type::DOUBLE: {
+        	    double dval;
+	            input >> dval;
+        	    PM_MEMCPY((&(rec_ptr->data[offset])), (&dval), (sizeof(double)));
+	          }
+        	    break;
 
-          case field_type::VARCHAR: {
-            char* vc = new char[finfo.deser_len];
-            input >> vc;
-            memcpy(&(rec_ptr->data[offset]), &vc, sizeof(char*));
-          }
-            break;
+	          case field_type::VARCHAR: {
+        	    char* vc = new char[finfo.deser_len];
+	            input >> vc;
+        	    PM_MEMCPY((&(rec_ptr->data[offset])), (&vc), (sizeof(char*)));
+	          }
+        	    break;
 
-          default:
-            std::cerr << "invalid type : --" << type << "--" << std::endl;
-            std::cerr << "entry : --" << entry_str << "--" << std::endl;
-            exit(EXIT_FAILURE);
-            break;
-        }
-      }
+	          default:
+        	    std::cerr << "invalid type : --" << type << "--" << std::endl;
+	            std::cerr << "entry : --" << entry_str << "--" << std::endl;
+        	    exit(EXIT_FAILURE);
+	            break;
+	        }
+      	    }
+    	} 
+    	return rec_ptr;
+   } else {
+
+	    unsigned int num_columns = sptr->num_columns;
+	    record* rec_ptr = new record(sptr);
+	    input.clear();
+	    input.str(entry_str);
+
+	    for (unsigned int itr = 0; itr < num_columns; itr++) {
+	      field_info finfo = sptr->columns[itr];
+	      bool enabled = finfo.enabled;
+
+	      if (enabled) {
+        	char type = finfo.type;
+	        size_t offset = finfo.offset;
+
+	        switch (type) {
+	          case field_type::INTEGER: {
+        	    int ival;
+	            input >> ival;
+        	    memcpy(&(rec_ptr->data[offset]), &ival, sizeof(int));
+	          }
+        	    break;
+
+	          case field_type::DOUBLE: {
+        	    double dval;
+	            input >> dval;
+        	    memcpy(&(rec_ptr->data[offset]), &dval, sizeof(double));
+	          }
+        	    break;
+
+	          case field_type::VARCHAR: {
+        	    char* vc = new char[finfo.deser_len];
+	            input >> vc;
+        	    memcpy(&(rec_ptr->data[offset]), &vc, sizeof(char*));
+	          }
+        	    break;
+
+	          default:
+        	    std::cerr << "invalid type : --" << type << "--" << std::endl;
+	            std::cerr << "entry : --" << entry_str << "--" << std::endl;
+        	    exit(EXIT_FAILURE);
+	            break;
+        	}
+	      }
+    	  }
+    	return rec_ptr;
     }
 
-    return rec_ptr;
   }
 
   std::string project(std::string entry_str, schema* sptr) {
