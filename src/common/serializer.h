@@ -69,7 +69,7 @@ class serializer {
 
     if (is_persistent) {
 	    unsigned int num_columns = sptr->num_columns;
-	    record* rec_ptr = new ((record*) pmalloc(sizeof(record))) record(sptr);
+	    record* rec_ptr = new ((record*) pmalloc(sizeof(record))) record(sptr, 1);
 	    input.clear();
 	    input.str(entry_str);
 

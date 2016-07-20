@@ -1367,13 +1367,13 @@ class btree {
       typename leaf_node::alloc_type a(leaf_node_allocator());
       a.destroy(ln);
       a.deallocate(ln, 1);
-      m_stats->leaves--;
+      PM_EQU((m_stats->leaves), (m_stats->leaves-1));
     } else {
       inner_node *in = static_cast<inner_node*>(n);
       typename inner_node::alloc_type a(inner_node_allocator());
       a.destroy(in);
       a.deallocate(in, 1);
-      m_stats->innernodes--;
+      PM_EQU((m_stats->innernodes), (m_stats->innernodes-1));
     }
   }
 
@@ -2219,10 +2219,10 @@ class btree {
       PM_EQU((newleaf->nextleaf->prevleaf), (newleaf));
     }
 
-    std::copy(leaf->slotkey + mid, leaf->slotkey + leaf->slotuse,
-              newleaf->slotkey);
-    data_copy(leaf->slotdata + mid, leaf->slotdata + leaf->slotuse,
-              newleaf->slotdata);
+    PM_RNGCPY((newleaf->slotkey), (leaf->slotuse - mid + 1));
+    std::copy(leaf->slotkey + mid, leaf->slotkey + leaf->slotuse, newleaf->slotkey);
+    PM_RNGCPY((newleaf->slotdata), (leaf->slotuse - mid + 1));
+    data_copy(leaf->slotdata + mid, leaf->slotdata + leaf->slotuse, newleaf->slotdata);
 
     PM_EQU((leaf->slotuse), (mid));
     PM_EQU((leaf->nextleaf), (newleaf));
@@ -2258,10 +2258,10 @@ class btree {
 
     PM_EQU((newinner->slotuse), (inner->slotuse - (mid + 1)));
 
-    std::copy(inner->slotkey + mid + 1, inner->slotkey + inner->slotuse,
-              newinner->slotkey);
-    std::copy(inner->childid + mid + 1, inner->childid + inner->slotuse + 1,
-              newinner->childid);
+    PM_RNGCPY((newinner->slotkey), (inner->slotuse - mid));
+    std::copy(inner->slotkey + mid + 1, inner->slotkey + inner->slotuse, newinner->slotkey);
+    PM_RNGCPY((newinner->childid), (inner->slotuse - mid + 1));
+    std::copy(inner->childid + mid + 1, inner->childid + inner->slotuse + 1, newinner->childid);
 
     PM_EQU((inner->slotuse), (mid));
 
@@ -2483,7 +2483,7 @@ class btree {
                                         0);
 
     if (!result.has(btree_not_found))
-      --m_stats->itemcount;
+      PM_EQU((m_stats->itemcount), (m_stats->itemcount-1));
 
 #ifdef BTREE_DEBUG
     if (debug) print(std::cerr);
@@ -2573,12 +2573,12 @@ class btree {
 
       BTREE_PRINT("Found key in leaf " << curr << " at slot " << slot);
 
-      std::copy(leaf->slotkey + slot + 1, leaf->slotkey + leaf->slotuse,
-                leaf->slotkey + slot);
-      data_copy(leaf->slotdata + slot + 1, leaf->slotdata + leaf->slotuse,
-                leaf->slotdata + slot);
+      PM_RNGCPY((leaf->slotkey + slot), (leaf->slotuse - slot));
+      std::copy(leaf->slotkey + slot + 1, leaf->slotkey + leaf->slotuse, leaf->slotkey + slot);
+      PM_RNGCPY((leaf->slotdata + slot), (leaf->slotuse - slot));
+      data_copy(leaf->slotdata + slot + 1, leaf->slotdata + leaf->slotuse, leaf->slotdata + slot);
 
-      leaf->slotuse--;
+      PM_EQU((leaf->slotuse), (leaf->slotuse-1));
 
       result_t myres = btree_ok;
 
@@ -2587,7 +2587,7 @@ class btree {
       if (slot == leaf->slotuse) {
         if (parent && parentslot < parent->slotuse) {
           BTREE_ASSERT(parent->childid[parentslot] == curr);
-          parent->slotkey[parentslot] = leaf->slotkey[leaf->slotuse - 1];
+          PM_EQU((parent->slotkey[parentslot]), (leaf->slotkey[leaf->slotuse - 1]));
         } else {
           if (leaf->slotuse >= 1) {
             BTREE_PRINT(
@@ -2611,7 +2611,7 @@ class btree {
           free_node((*m_root));
 
           (*m_root) = leaf = NULL;
-          m_headleaf = m_tailleaf = NULL;
+          PM_EQU((m_headleaf), (NULL)); PM_EQU((m_tailleaf), (NULL));
 
           // will be decremented soon by insert_start()
           BTREE_ASSERT(m_stats->itemcount == 1);BTREE_ASSERT(m_stats->leaves == 0);BTREE_ASSERT(m_stats->innernodes == 0);
@@ -2711,7 +2711,7 @@ class btree {
               "Fixing lastkeyupdate: key " << result.lastkey << " into parent " << parent << " at parentslot " << parentslot);
 
           BTREE_ASSERT(parent->childid[parentslot] == curr);
-          parent->slotkey[parentslot] = result.lastkey;
+          PM_EQU((parent->slotkey[parentslot]), (result.lastkey));
         } else {
           BTREE_PRINT("Forwarding lastkeyupdate: key " << result.lastkey);
           myres |= result_t(btree_update_lastkey, result.lastkey);
@@ -2728,18 +2728,18 @@ class btree {
 
         free_node(inner->childid[slot]);
 
-        std::copy(inner->slotkey + slot, inner->slotkey + inner->slotuse,
-                  inner->slotkey + slot - 1);
-        std::copy(inner->childid + slot + 1,
-                  inner->childid + inner->slotuse + 1, inner->childid + slot);
+        PM_RNGCPY((inner->slotkey + slot - 1), (inner->slotuse - slot + 1));
+        std::copy(inner->slotkey + slot, inner->slotkey + inner->slotuse, inner->slotkey + slot - 1);
+        PM_RNGCPY((inner->childid + slot), (inner->slotuse - slot + 1));
+        std::copy(inner->childid + slot + 1, inner->childid + inner->slotuse + 1, inner->childid + slot);
 
-        inner->slotuse--;
+        PM_EQU((inner->slotuse), (inner->slotuse-1));
 
         if (inner->level == 1) {
           // fix split key for children leaves
           slot--;
           leaf_node *child = static_cast<leaf_node*>(inner->childid[slot]);
-          inner->slotkey[slot] = child->slotkey[child->slotuse - 1];
+          PM_EQU((inner->slotkey[slot]), (child->slotkey[child->slotuse - 1]));
         }
       }
 
@@ -2749,9 +2749,9 @@ class btree {
         if (leftinner == NULL && rightinner == NULL) {
           BTREE_ASSERT(inner == (*m_root));BTREE_ASSERT(inner->slotuse == 0);
 
-          (*m_root) = inner->childid[0];
+          PM_EQU((*m_root), (inner->childid[0]));
 
-          inner->slotuse = 0;
+          PM_EQU((inner->slotuse), (0));
           free_node(inner);
 
           return btree_ok;
@@ -2842,12 +2842,12 @@ class btree {
 
       BTREE_PRINT("Found iterator in leaf " << curr << " at slot " << slot);
 
-      std::copy(leaf->slotkey + slot + 1, leaf->slotkey + leaf->slotuse,
-                leaf->slotkey + slot);
-      data_copy(leaf->slotdata + slot + 1, leaf->slotdata + leaf->slotuse,
-                leaf->slotdata + slot);
+      PM_RNGCPY((leaf->slotkey + slot), (leaf->slotuse - slot));
+      std::copy(leaf->slotkey + slot + 1, leaf->slotkey + leaf->slotuse, leaf->slotkey + slot);
+      PM_RNGCPY((leaf->slotdata + slot), (leaf->slotuse - slot));
+      data_copy(leaf->slotdata + slot + 1, leaf->slotdata + leaf->slotuse, leaf->slotdata + slot);
 
-      leaf->slotuse--;
+      PM_EQU((leaf->slotuse), (leaf->slotuse-1));
 
       result_t myres = btree_ok;
 
@@ -2856,7 +2856,7 @@ class btree {
       if (slot == leaf->slotuse) {
         if (parent && parentslot < parent->slotuse) {
           BTREE_ASSERT(parent->childid[parentslot] == curr);
-          parent->slotkey[parentslot] = leaf->slotkey[leaf->slotuse - 1];
+          PM_EQU((parent->slotkey[parentslot]), (leaf->slotkey[leaf->slotuse - 1]));
         } else {
           if (leaf->slotuse >= 1) {
             BTREE_PRINT(
@@ -2880,7 +2880,7 @@ class btree {
           free_node((*m_root));
 
           (*m_root) = leaf = NULL;
-          m_headleaf = m_tailleaf = NULL;
+          PM_EQU((m_headleaf), (NULL)); PM_EQU((m_tailleaf), (NULL));
 
           // will be decremented soon by insert_start()
           BTREE_ASSERT(m_stats->itemcount == 1);BTREE_ASSERT(m_stats->leaves == 0);BTREE_ASSERT(m_stats->innernodes == 0);
@@ -2994,7 +2994,7 @@ class btree {
               "Fixing lastkeyupdate: key " << result.lastkey << " into parent " << parent << " at parentslot " << parentslot);
 
           BTREE_ASSERT(parent->childid[parentslot] == curr);
-          parent->slotkey[parentslot] = result.lastkey;
+          PM_EQU((parent->slotkey[parentslot]), (result.lastkey));
         } else {
           BTREE_PRINT("Forwarding lastkeyupdate: key " << result.lastkey);
           myres |= result_t(btree_update_lastkey, result.lastkey);
@@ -3011,18 +3011,18 @@ class btree {
 
         free_node(inner->childid[slot]);
 
-        std::copy(inner->slotkey + slot, inner->slotkey + inner->slotuse,
-                  inner->slotkey + slot - 1);
-        std::copy(inner->childid + slot + 1,
-                  inner->childid + inner->slotuse + 1, inner->childid + slot);
+        PM_RNGCPY((inner->slotkey + slot - 1), (inner->slotuse - slot + 1));
+        std::copy(inner->slotkey + slot, inner->slotkey + inner->slotuse, inner->slotkey + slot - 1);
+        PM_RNGCPY((inner->childid + slot), (inner->slotuse - slot + 1));
+        std::copy(inner->childid + slot + 1, inner->childid + inner->slotuse + 1, inner->childid + slot);
 
-        inner->slotuse--;
+        PM_EQU((inner->slotuse), (inner->slotuse-1));
 
         if (inner->level == 1) {
           // fix split key for children leaves
           slot--;
           leaf_node *child = static_cast<leaf_node*>(inner->childid[slot]);
-          inner->slotkey[slot] = child->slotkey[child->slotuse - 1];
+          PM_EQU((inner->slotkey[slot]), (child->slotkey[child->slotuse - 1]));
         }
       }
 
@@ -3033,9 +3033,9 @@ class btree {
         if (leftinner == NULL && rightinner == NULL) {
           BTREE_ASSERT(inner == (*m_root));BTREE_ASSERT(inner->slotuse == 0);
 
-          (*m_root) = inner->childid[0];
+          PM_EQU((*m_root), (inner->childid[0]));
 
-          inner->slotuse = 0;
+          PM_EQU((inner->slotuse), (0));
           free_node(inner);
 
           return btree_ok;
@@ -3097,20 +3097,20 @@ class btree {
 
     BTREE_ASSERT(left->slotuse + right->slotuse < leafslotmax);
 
-    std::copy(right->slotkey, right->slotkey + right->slotuse,
-              left->slotkey + left->slotuse);
-    data_copy(right->slotdata, right->slotdata + right->slotuse,
-              left->slotdata + left->slotuse);
+    PM_RNGCPY((left->slotkey + left->slotuse), (right->slotuse + 1));
+    std::copy(right->slotkey, right->slotkey + right->slotuse, left->slotkey + left->slotuse);
+    PM_RNGCPY((left->slotdata + left->slotuse), (right->slotuse + 1));
+    data_copy(right->slotdata, right->slotdata + right->slotuse, left->slotdata + left->slotuse);
 
-    left->slotuse += right->slotuse;
+    PM_EQU((left->slotuse),  (left->slotuse + right->slotuse));
 
-    left->nextleaf = right->nextleaf;
+    PM_EQU((left->nextleaf), (right->nextleaf));
     if (left->nextleaf)
-      left->nextleaf->prevleaf = left;
+      PM_EQU((left->nextleaf->prevleaf), (left));
     else
-      m_tailleaf = left;
+      PM_EQU((m_tailleaf), (left));
 
-    right->slotuse = 0;
+    PM_EQU((right->slotuse), (0));
 
     return btree_fixmerge;
   }
@@ -3141,17 +3141,17 @@ class btree {
     }
 
     // retrieve the decision key from parent
-    left->slotkey[left->slotuse] = parent->slotkey[parentslot];
-    left->slotuse++;
+    PM_EQU((left->slotkey[left->slotuse]), (parent->slotkey[parentslot]));
+    PM_EQU((left->slotuse), (left->slotuse+1));
 
     // copy over keys and children from right
-    std::copy(right->slotkey, right->slotkey + right->slotuse,
-              left->slotkey + left->slotuse);
-    std::copy(right->childid, right->childid + right->slotuse + 1,
-              left->childid + left->slotuse);
+    PM_RNGCPY((left->slotkey + left->slotuse), (right->slotuse + 1));
+    std::copy(right->slotkey, right->slotkey + right->slotuse, left->slotkey + left->slotuse);
+    PM_RNGCPY((left->childid + left->slotuse), (right->slotuse + 1 + 1));
+    std::copy(right->childid, right->childid + right->slotuse + 1, left->childid + left->slotuse);
 
-    left->slotuse += right->slotuse;
-    right->slotuse = 0;
+    PM_EQU((left->slotuse), (left->slotuse + right->slotuse));
+    PM_EQU((right->slotuse), (0));
 
     return btree_fixmerge;
   }
@@ -3176,25 +3176,25 @@ class btree {
 
     // copy the first items from the right node to the last slot in the left node.
 
-    std::copy(right->slotkey, right->slotkey + shiftnum,
-              left->slotkey + left->slotuse);
-    data_copy(right->slotdata, right->slotdata + shiftnum,
-              left->slotdata + left->slotuse);
+    PM_RNGCPY((left->slotkey + left->slotuse), (shiftnum + 1));
+    std::copy(right->slotkey, right->slotkey + shiftnum, left->slotkey + left->slotuse);
+    PM_RNGCPY((left->slotdata + left->slotuse), (shiftnum + 1));
+    data_copy(right->slotdata, right->slotdata + shiftnum, left->slotdata + left->slotuse);
 
-    left->slotuse += shiftnum;
+    PM_EQU((left->slotuse),(left->slotuse + shiftnum));
 
     // shift all slots in the right node to the left
 
-    std::copy(right->slotkey + shiftnum, right->slotkey + right->slotuse,
-              right->slotkey);
-    data_copy(right->slotdata + shiftnum, right->slotdata + right->slotuse,
-              right->slotdata);
+    PM_RNGCPY((right->slotkey), (right->slotuse - shiftnum + 1));
+    std::copy(right->slotkey + shiftnum, right->slotkey + right->slotuse, right->slotkey);
+    PM_RNGCPY((right->slotdata), (right->slotuse - shiftnum + 1));
+    data_copy(right->slotdata + shiftnum, right->slotdata + right->slotuse, right->slotdata);
 
-    right->slotuse -= shiftnum;
+    PM_EQU((right->slotuse), (right->slotuse - shiftnum));
 
     // fixup parent
     if (parentslot < parent->slotuse) {
-      parent->slotkey[parentslot] = left->slotkey[left->slotuse - 1];
+      PM_EQU((parent->slotkey[parentslot]), (left->slotkey[left->slotuse - 1]));
       return btree_ok;
     } else {  // the update is further up the tree
       return result_t(btree_update_lastkey, left->slotkey[left->slotuse - 1]);
@@ -3230,29 +3230,29 @@ class btree {
     }
 
     // copy the parent's decision slotkey and childid to the first new key on the left
-    left->slotkey[left->slotuse] = parent->slotkey[parentslot];
-    left->slotuse++;
+    PM_EQU((left->slotkey[left->slotuse]), (parent->slotkey[parentslot]));
+    PM_EQU((left->slotuse), (left->slotuse+1));
 
     // copy the other items from the right node to the last slots in the left node.
 
-    std::copy(right->slotkey, right->slotkey + shiftnum - 1,
-              left->slotkey + left->slotuse);
-    std::copy(right->childid, right->childid + shiftnum,
-              left->childid + left->slotuse);
+    PM_RNGCPY((left->slotkey + left->slotuse), (shiftnum));
+    std::copy(right->slotkey, right->slotkey + shiftnum - 1, left->slotkey + left->slotuse);
+    PM_RNGCPY((left->childid + left->slotuse), (shiftnum + 1));
+    std::copy(right->childid, right->childid + shiftnum, left->childid + left->slotuse);
 
-    left->slotuse += shiftnum - 1;
+    PM_EQU((left->slotuse), (left->slotuse + shiftnum - 1));
 
     // fixup parent
-    parent->slotkey[parentslot] = right->slotkey[shiftnum - 1];
+    PM_EQU((parent->slotkey[parentslot]), (right->slotkey[shiftnum - 1]));
 
     // shift all slots in the right node
 
-    std::copy(right->slotkey + shiftnum, right->slotkey + right->slotuse,
-              right->slotkey);
-    std::copy(right->childid + shiftnum, right->childid + right->slotuse + 1,
-              right->childid);
+    PM_RNGCPY((right->slotkey), (right->slotuse - shiftnum + 1));
+    std::copy(right->slotkey + shiftnum, right->slotkey + right->slotuse, right->slotkey);
+    PM_RNGCPY((right->childid), (right->slotuse + 1 - shiftnum + 1));
+    std::copy(right->childid + shiftnum, right->childid + right->slotuse + 1, right->childid);
 
-    right->slotuse -= shiftnum;
+    PM_EQU((right->slotuse), (right->slotuse - shiftnum));
   }
 
 /// Balance two leaf nodes. The function moves key/data pairs from left to
@@ -3286,24 +3286,24 @@ class btree {
 
     BTREE_ASSERT(right->slotuse + shiftnum < leafslotmax);
 
-    PM_RNGCPY((right->slotkey + right->slotuse + shiftnum),(right->slotuse));
+    PM_RNGCPY((right->slotkey + right->slotuse + shiftnum),(right->slotuse + 1));
     std::copy_backward(right->slotkey, right->slotkey + right->slotuse,
                        right->slotkey + right->slotuse + shiftnum);
-    PM_RNGCPY((right->slotdata + right->slotuse + shiftnum),(right->slotuse));
+    PM_RNGCPY((right->slotdata + right->slotuse + shiftnum),(right->slotuse + 1));
     data_copy_backward(right->slotdata, right->slotdata + right->slotuse,
                        right->slotdata + right->slotuse + shiftnum);
 
-    right->slotuse += shiftnum;
+    PM_EQU((right->slotuse), (right->slotuse + shiftnum));
 
     // copy the last items from the left node to the first slot in the right node.
-    std::copy(left->slotkey + left->slotuse - shiftnum,
-              left->slotkey + left->slotuse, right->slotkey);
-    data_copy(left->slotdata + left->slotuse - shiftnum,
-              left->slotdata + left->slotuse, right->slotdata);
+    PM_RNGCPY((right->slotkey), (shiftnum + 1));
+    std::copy(left->slotkey + left->slotuse - shiftnum, left->slotkey + left->slotuse, right->slotkey);
+    PM_RNGCPY((right->slotdata), (shiftnum + 1));
+    data_copy(left->slotdata + left->slotuse - shiftnum, left->slotdata + left->slotuse, right->slotdata);
 
-    left->slotuse -= shiftnum;
+    PM_EQU((left->slotuse), (left->slotuse - shiftnum));
 
-    parent->slotkey[parentslot] = left->slotkey[left->slotuse - 1];
+    PM_EQU((parent->slotkey[parentslot]), (left->slotkey[left->slotuse - 1]));
   }
 
 /// Balance two inner nodes. The function moves key/data pairs from left to
@@ -3335,28 +3335,28 @@ class btree {
 
     BTREE_ASSERT(right->slotuse + shiftnum < innerslotmax);
 
-    PM_RNGCPY((right->slotkey + right->slotuse + shiftnum), (right->slotuse)),
+    PM_RNGCPY((right->slotkey + right->slotuse + shiftnum), (right->slotuse + 1)),
     std::copy_backward(right->slotkey, right->slotkey + right->slotuse,
                        right->slotkey + right->slotuse + shiftnum);
-    PM_RNGCPY((right->childid + right->slotuse + 1 + shiftnum), (right->slotuse + 1)),
+    PM_RNGCPY((right->childid + right->slotuse + 1 + shiftnum), (right->slotuse + 1 + 1)),
     std::copy_backward(right->childid, right->childid + right->slotuse + 1,
                        right->childid + right->slotuse + 1 + shiftnum);
 
-    right->slotuse += shiftnum;
+    PM_EQU((right->slotuse), (right->slotuse + shiftnum));
 
     // copy the parent's decision slotkey and childid to the last new key on the right
-    right->slotkey[shiftnum - 1] = parent->slotkey[parentslot];
+    PM_EQU((right->slotkey[shiftnum - 1]), (parent->slotkey[parentslot]));
 
     // copy the remaining last items from the left node to the first slot in the right node.
-    std::copy(left->slotkey + left->slotuse - shiftnum + 1,
-              left->slotkey + left->slotuse, right->slotkey);
-    std::copy(left->childid + left->slotuse - shiftnum + 1,
-              left->childid + left->slotuse + 1, right->childid);
+    PM_RNGCPY((right->slotkey), (shiftnum));
+    std::copy(left->slotkey + left->slotuse - shiftnum + 1, left->slotkey + left->slotuse, right->slotkey);
+    PM_RNGCPY((right->childid), (shiftnum + 1));
+    std::copy(left->childid + left->slotuse - shiftnum + 1, left->childid + left->slotuse + 1, right->childid);
 
     // copy the first to-be-removed key from the left node to the parent's decision slot
-    parent->slotkey[parentslot] = left->slotkey[left->slotuse - shiftnum];
+    PM_EQU((parent->slotkey[parentslot]), (left->slotkey[left->slotuse - shiftnum]));
 
-    left->slotuse -= shiftnum;
+    PM_EQU((left->slotuse), (left->slotuse - shiftnum));
   }
 
  public:
