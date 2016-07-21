@@ -126,7 +126,7 @@ class record {
     //assert(sptr->columns[field_id].type == field_type::VARCHAR);
 	char *vc = NULL;
 	vc = (char*) pmalloc((vc_str.size()+1)*sizeof(char));
-    	PM_STRCPY((vc), (vc_str.c_str()));
+    	PM_STRCPY((vc), (vc_str.c_str()), (vc_str.size()+1)); // if dst is not null terminated -> trouble
 	if(is_persistent)
 	    	PM_MEMCPY((&(data[sptr->columns[field_id].offset])), (&vc), (sizeof(char*)));
 	else

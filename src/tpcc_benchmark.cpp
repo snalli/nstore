@@ -1284,7 +1284,7 @@ void tpcc_benchmark::do_delivery(engine* ee) {
   record* rec_ptr;
   statement st;
   std::vector<int> field_ids;
-  std::string empty;
+  std::string empty('x',3);
 
   txn_id++;
   TIMER(ee->txn_begin());
@@ -1445,7 +1445,7 @@ void tpcc_benchmark::do_new_order(engine* ee, bool finish) {
   record* rec_ptr;
   statement st;
   std::vector<int> field_ids;
-  std::string empty;
+  std::string empty('x',3);
   std::vector<std::string> empty_v(10);
 
   int w_id = get_rand_int(0, warehouse_count);
@@ -1699,7 +1699,7 @@ void tpcc_benchmark::do_order_status(engine* ee) {
   record* rec_ptr;
   statement st;
   std::vector<int> field_ids;
-  std::string empty;
+  std::string empty('x',3);
   std::vector<std::string> empty_v(10);
 
   txn_id++;
@@ -1818,7 +1818,7 @@ void tpcc_benchmark::do_payment(engine* ee) {
   record* rec_ptr;
   statement st;
   std::vector<int> field_ids;
-  std::string empty;
+  std::string empty('x',3);
 
   bool pay_local = get_rand_bool(0.85);
   bool pay_by_name = get_rand_bool(0.10);  // 0.60
@@ -2049,7 +2049,7 @@ void tpcc_benchmark::do_stock_level(engine* ee) {
   record* rec_ptr;
   statement st;
   std::vector<int> field_ids;
-  std::string empty;
+  std::string empty('x',3);
   std::vector<std::string> empty_v(10);
 
   int w_id = get_rand_int(0, warehouse_count);
