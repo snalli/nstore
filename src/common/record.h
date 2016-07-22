@@ -125,12 +125,15 @@ class record {
   void set_varchar(const int field_id, std::string vc_str) {
     //assert(sptr->columns[field_id].type == field_type::VARCHAR);
 	char *vc = NULL;
-	vc = (char*) pmalloc((vc_str.size()+1)*sizeof(char));
-    	PM_STRCPY((vc), (vc_str.c_str()), (vc_str.size()+1)); // if dst is not null terminated -> trouble
-	if(is_persistent)
+	if(is_persistent) {
+		vc = (char*) pmalloc((vc_str.size()+1)*sizeof(char));
+	    	PM_STRCPY((vc), (vc_str.c_str()), (vc_str.size()+1)); // if dst is not null terminated -> trouble
 	    	PM_MEMCPY((&(data[sptr->columns[field_id].offset])), (&vc), (sizeof(char*)));
-	else
+	} else {
+		vc = (char*) malloc((vc_str.size()+1)*sizeof(char));
+	    	strcpy((vc), (vc_str.c_str())); // if dst is not null terminated -> trouble
 	    	memcpy((&(data[sptr->columns[field_id].offset])), (&vc), (sizeof(char*)));
+	}
 
     // Pointer assignment. Why do you have to be all fancy ?
     // Here you are addressing the destination via its virtual address,
@@ -145,6 +148,8 @@ class record {
 	// Only called on the DB load path and we need pmalloc on it
 	// Never called on DB update path and we don't need pmalloc there.
   void persist_data() {
+    if (!is_persistent)
+	die();
     pmemalloc_activate(data);
     unsigned int field_itr;
     for (field_itr = 0; field_itr < sptr->num_columns; field_itr++) {
