@@ -57,3 +57,8 @@ results/*.pdf
 /Debug
 misc/linux-examples/*
 
+#Misc
+.*.swp
+*.txt
+pin/
+
