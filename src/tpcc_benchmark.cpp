@@ -1338,7 +1338,8 @@ void tpcc_benchmark::do_delivery(engine* ee) {
     }
     LOG_INFO("orders :: %s ", orders_str.c_str());
     // Get a persistent record since we are going to insert it 
-    rec_ptr = sr.deserialize(orders_str, orders_table_schema, 1);
+    rec_ptr = sr.deserialize(orders_str, orders_table_schema); // freud : no need of persistence since all fields
+								// in orders_are inlined
 
     int c_id = std::stoi(rec_ptr->get_data(1));
 
@@ -2128,7 +2129,7 @@ void tpcc_benchmark::do_stock_level(engine* ee) {
     LOG_INFO("s_quantity :: %d ", s_quantity);
 
     if (s_quantity < threshold) {
-      items.insert(s_i_id);
+      items.insert(s_i_id); // Volatile
     }
   }
 
