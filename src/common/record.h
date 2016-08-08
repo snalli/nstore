@@ -103,6 +103,7 @@ class record {
       case field_type::DOUBLE:
       case field_type::VARCHAR:
 	// data copy and not pointer copy. Going by the variable len field.
+	// Could be pointer copy to is what i am thinking now !
 	PM_MEMCPY((&(data[offset])), (&(rec_ptr->data[offset])), (len));
         break;
 

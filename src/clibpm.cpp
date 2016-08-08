@@ -349,7 +349,7 @@ void *pmemalloc_init(const char *path, size_t size) {
    *  4. FREEING clumps that need to be freed
    *  5. adjacent free clumps that need to be coalesced
    */
-  pmemalloc_recover(pmp);
+  pmemalloc_recover(pmp); // This can be removed ?
   pmemalloc_coalesce(pmp);
 
   return pmp;

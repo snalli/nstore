@@ -75,7 +75,7 @@ class coordinator {
 
     for (unsigned int i = 0; i < num_executors; i++)
       loaders[i].join();
-
+    /* We don't start tracing until we are done loading */
     mtm_enable_trace = conf.is_trace_enabled;
     std::cerr << "EXECUTING..." << std::endl;
 
