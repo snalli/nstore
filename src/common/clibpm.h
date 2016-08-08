@@ -187,6 +187,7 @@ static inline void __pmem_persist(void *addr, size_t len, int flags) {
 		struct clump *clp;						\
   		size_t sz;							\
   		DEBUG("ptr_=%lx", abs_ptr);					\
+		/*
     		if (!(LIBPM <= (unsigned long long) abs_ptr &&			\
 			(unsigned long long) abs_ptr <= LIBPM + PMSIZE))	\
 		{								\
@@ -198,6 +199,7 @@ static inline void __pmem_persist(void *addr, size_t len, int flags) {
     			assert (LIBPM <= (unsigned long long) abs_ptr &&	\
 			(unsigned long long) abs_ptr <= LIBPM + PMSIZE);	\
 		}								\
+		*/								\
   		clp = (struct clump *) ((uintptr_t) abs_ptr - PMEM_CHUNK_SIZE);	\
   		ASSERTeq(clp->size & PMEM_STATE_MASK, PMEM_STATE_RESERVED);	\
   		sz = clp->size & ~PMEM_STATE_MASK;				\
