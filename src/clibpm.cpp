@@ -11,6 +11,19 @@ void* operator new(size_t sz) throw (std::bad_alloc) {
     return ret;
 }
 
+void operator delete(void *p, std::size_t sz) throw () {
+	assert(0);
+	fprintf(stderr, "%p\n", p+sz);
+	return;
+}
+
+void operator deletei[](void *p, std::size_t sz) throw () {
+	assert(0);
+	fprintf(stderr, "%p\n", p+sz);
+	return;
+}
+
+
 void operator delete(void *p) throw () {
     if (LIBPM <= (unsigned long long) p && (unsigned long long) p <= LIBPM + PMSIZE)
 	pfree(p);
