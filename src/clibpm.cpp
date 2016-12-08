@@ -17,7 +17,7 @@ void operator delete(void *p, std::size_t sz) throw () {
 	return;
 }
 
-void operator deletei[](void *p, std::size_t sz) throw () {
+void operator delete[](void *p, std::size_t sz) throw () {
 	assert(0);
 	fprintf(stderr, "%p\n", p+sz);
 	return;
