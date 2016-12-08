@@ -11,6 +11,7 @@ class usertable_record : public record {
                    int num_val_fields, bool update_one, int is_persistent = 0)
 	: record(_sptr, is_persistent) {
 
+		if(update_one) assert(0);
 		set_int(0, key);
 		if (val.empty())
 			return;
