@@ -157,7 +157,7 @@ int opt_wal_engine::update(const statement& st) {
 
   // Check if key exists. If not, return. There is nothing to update.
   if (indices->at(0)->pm_map->at(key, &before_rec) == false) {
-    rec_ptr->clear_data();
+    rec_ptr->clear_data(); // This here gives really small Txns !
     delete rec_ptr;
     return EXIT_SUCCESS;
   }

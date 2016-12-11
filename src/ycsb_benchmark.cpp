@@ -169,7 +169,7 @@ void ycsb_benchmark::do_update(engine* ee) {
     int key = zipf_dist[zipf_dist_offset + stmt_itr];
     // int key = txn_id % num_keys; 
     if(txn_id % 10000 == 0)
-	    std::cerr << tid << "completed " << txn_id << " transactions" << std::endl << std::flush;
+	    std::cerr << "worker " << tid << " completed " << txn_id << " transactions" << std::endl << std::flush;
     int is_persistent = 1;
 	// The assumption of homogeneous memory has allowed you to reuse code.
     record* rec_ptr = new usertable_record(user_table_schema, key, updated_val,

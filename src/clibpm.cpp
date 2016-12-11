@@ -12,9 +12,12 @@ void* operator new(size_t sz) throw (std::bad_alloc) {
 }
 
 void operator delete(void *p, std::size_t sz) throw () {
-	assert(0);
-	fprintf(stderr, "%p\n", p+sz);
-	return;
+    if (LIBPM <= (unsigned long long) p && (unsigned long long) p <= LIBPM + PMSIZE)
+	pfree(p);
+    else
+    	free(p);
+    return;
+    fprintf(stderr, "%p\n", p+sz);
 }
 
 void operator delete[](void *p, std::size_t sz) throw () {
@@ -204,6 +207,7 @@ void check() {
 
 // pmemalloc_recover -- recover after a possible crash
 static void pmemalloc_recover(void* pmp) {
+
   struct clump *clp;
 
   DEBUG("pmp=0x%lx", pmp);
@@ -217,7 +221,7 @@ static void pmemalloc_recover(void* pmp) {
 
     switch (state) {
       case PMEM_STATE_RESERVED:
-        /* return the clump to the FREE pool */
+        // return the clump to the FREE pool
         clp->size = sz | PMEM_STATE_FREE;
         pmem_persist(clp, sizeof(*clp), 0);
         break;
@@ -273,6 +277,7 @@ static void pmemalloc_coalesce(void* pmp) {
   }
 
 }
+
 
 // pmemalloc_init -- setup a Persistent Memory pool for use
 void *pmemalloc_init(const char *path, size_t size) {

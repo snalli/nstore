@@ -110,6 +110,7 @@ namespace storage {
     state.test_benchmark_mode = 0;
 
     // Parse args
+    int debug_fd = -1, ret = 0;
     while (1) {
       int idx = 0;
       int c = getopt_long(argc, argv, "n:f:x:k:e:p:g:q:b:j:svwascmhludytzori", opts,
@@ -120,9 +121,49 @@ namespace storage {
 
       switch (c) {
       case 'n':
-	state.is_trace_enabled = 1;
-        std::cerr << "mtm_enable_trace: " << mtm_enable_trace << std::endl;
+	state.is_trace_enabled = atoi(optarg);
+	if(!state.is_trace_enabled)
+		break;
+	assert(debug_fd == -1);
+	assert(trace_marker == -1);
+	assert(tracing_on == -1);
+
+	/* Turn off tracing from previous sessions */
+	debug_fd = open("/sys/kernel/debug/tracing/tracing_on", O_WRONLY);
+	if(debug_fd != -1){ write(debug_fd, "0", 1); }
+	else{ ret = 1; goto fail; }
+	close(debug_fd);
+
+	/* Emtpy trace buffer */
+	debug_fd = open("/sys/kernel/debug/tracing/current_tracer", O_WRONLY);
+	if(debug_fd != -1){ write(debug_fd, "nop", 3); }
+	else{ ret = 2; goto fail; }
+	close(debug_fd);
+
+	/* Pick a routine that EXISTS but will never be called, VVV IMP !*/
+	debug_fd = open("/sys/kernel/debug/tracing/set_ftrace_filter", O_WRONLY);
+	if(debug_fd != -1){ write(debug_fd, "pmfs_mount", 10); }
+	else{ ret = 3; goto fail; }
+	close(debug_fd);
+
+	/* Enable function tracer */
+	debug_fd = open("/sys/kernel/debug/tracing/current_tracer", O_WRONLY);
+	if(debug_fd != -1){ write(debug_fd, "function", 8); }
+	else{ ret = 4; goto fail; }
+	close(debug_fd);
+
+	trace_marker = open("/sys/kernel/debug/tracing/trace_marker", O_WRONLY);
+	if(trace_marker == -1){ ret = 5; goto fail; }
+
+	tracing_on = open("/sys/kernel/debug/tracing/tracing_on", O_WRONLY);
+	if(tracing_on == -1){ ret = 6; goto fail; }
+
+        std::cerr << "mtm_enable_trace: " << state.is_trace_enabled << std::endl;
         break;
+fail:
+	fprintf(stderr, "failed to open trace mechanism, debug and waste your life !\n");
+	exit(ret);
+
       case 'f':
         state.fs_path = std::string(optarg);
         std::cerr << "fs_path: " << state.fs_path << std::endl;
@@ -237,8 +278,11 @@ namespace storage {
 }
 
 int main(int argc, char **argv) {
-  const char* path = "/dev/shm/zfile";
+  /* Get to DAX FS */
+  const char* path = "/mnt/pmfs/nstore/zfile";
+  //const char* path = "/home/snalli/Desktop/zfile";
 
+  #ifdef _ENABLE_TRACE 
   gettimeofday(&glb_time, NULL);
   glb_tv_sec  = glb_time.tv_sec;
   glb_tv_usec = glb_time.tv_usec;
@@ -252,6 +296,7 @@ int main(int argc, char **argv) {
   	fprintf(m_err, "Failed to allocate trace buffer. Abort now.");
 	die();
   }
+  #endif
 
   size_t pmp_size = PMSIZE;
   if ((storage::pmp = storage::pmemalloc_init(path, pmp_size)) == NULL)
@@ -265,24 +310,26 @@ int main(int argc, char **argv) {
   state.sp = storage::sp;
   storage::coordinator cc(state);
 
-                pthread_spin_lock(&tbuf_lock);
-                if(tbuf_sz && mtm_enable_trace)
-                {
-                        tbuf_ptr = 0;
-                        while(tbuf_ptr < tbuf_sz)
-                        {
-                                /*
-                                 * for some reason tbuf[tbuf] doesn't work
-                                 * although i thot tbuf + tbuf is same as
-                                 * tbuf[tbuf];
-                                 */
-                                tbuf_ptr = tbuf_ptr + 1 + fprintf(m_out, "%s", tbuf + tbuf_ptr);
-                                /* tbuf_ptr += TSTR_SZ; */
-                        }
-                        tbuf_sz = 0;
-                }
-                pthread_spin_unlock(&tbuf_lock);
-                pthread_spin_destroy(&tbuf_lock);
+  #ifdef _ENABLE_TRACE
+  pthread_spin_lock(&tbuf_lock);
+  if(tbuf_sz && mtm_enable_trace)
+  {
+  	tbuf_ptr = 0;
+        while(tbuf_ptr < tbuf_sz)
+        {
+        	/*
+                 * for some reason tbuf[tbuf] doesn't work
+                 * although i thot tbuf + tbuf is same as
+                 * tbuf[tbuf];
+                 */
+                 tbuf_ptr = tbuf_ptr + 1 + fprintf(m_out, "%s", tbuf + tbuf_ptr);
+                 /* tbuf_ptr += TSTR_SZ; */
+        }
+        	tbuf_sz = 0;
+  }
+  pthread_spin_unlock(&tbuf_lock);
+  pthread_spin_destroy(&tbuf_lock);
+  #endif
 
   cc.eval(state);
 

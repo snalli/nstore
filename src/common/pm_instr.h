@@ -1,12 +1,12 @@
 /*
  * Macros to instrument PM reads and writes
- * Author : Sanketh Nalli 
+ * Author : Nalli, S. 
  * Contact: nalli@wisc.edu
  *
  * The value returned by code surrounded by {}
  * is the value returned by last statement in
  * the block. These macros do not perform any
- * operations on the persistent variable itsellu,
+ * operations on the persistent variable itself,
  * and hence do not introduce any extra accesses
  * to persistent memory. 
  * 
@@ -43,11 +43,14 @@ extern unsigned long long tbuf_sz;
 extern pthread_spinlock_t tbuf_lock;
 extern int mtm_enable_trace;
 extern int mtm_debug_buffer;
+extern int tracing_on, trace_marker;
 extern struct timeval glb_time;
 extern unsigned long long start_buf_drain, end_buf_drain, buf_drain_period;
 extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
 
 
+#ifdef _ENABLE_TRACE
+/* Custom user-mode, blocking tracer */
 #define time_since_start							\
 	({									\
 		gettimeofday(&mtm_time, NULL);					\
@@ -61,7 +64,6 @@ extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
 		({mtm_tid = syscall(SYS_gettid); mtm_tid;}) : mtm_tid), 	\
 	(time_since_start)				
 
-#ifdef _ENABLE_TRACE
 #define pm_trace_print(format, args ...)					\
     {										\
 	if(mtm_enable_trace) {							\
@@ -104,7 +106,19 @@ extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
 	pthread_spin_unlock(&tbuf_lock);					\
 	}									\
     }
+#elif _ENABLE_FTRACE
+/* Standard kernel-mode, non-blocking tracer.  */
+#define TENTRY_ID (int)0 ,(unsigned long long)0
+#define pm_trace_print(format, args ...)					\
+    {										\
+	if(mtm_enable_trace) {							\
+       		sprintf(tstr, format, args);    				\
+		tsz = strlen(tstr);						\
+		write(trace_marker, tstr+4, tsz-4);				\
+	}									\
+    }
 #else
+/* No tracing */
 #define pm_trace_print(args ...)		{;}
 #endif
 
@@ -121,6 +135,7 @@ extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
 
 /* PM flush */
 #define PM_FLUSH_MARKER                 "PM_L"
+#define PM_FLUSHOPT_MARKER              "PM_O"
 
 /* PM Delimiters */
 #define PM_TX_START                     "PM_XS"
@@ -366,6 +381,19 @@ extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
  * (done/copied) followed by count to maintain 
  * uniformity with other macros
  */
+#define PM_FLUSHOPT(pm_dst, count, done)               	\
+    ({                                              	\
+        PM_TRACE("%d:%llu:%s:%p:%u:%u:%s:%d\n",      	\
+			TENTRY_ID,		    	\
+                    PM_FLUSHOPT_MARKER,                	\
+                    (pm_dst),                       	\
+                    done,                           	\
+                    count,                          	\
+                    LOC1,                       	\
+                    LOC2                        	\
+                );                                  	\
+    })
+
 #define PM_FLUSH(pm_dst, count, done)               	\
     ({                                              	\
         PM_TRACE("%d:%llu:%s:%p:%u:%u:%s:%d\n",      	\
