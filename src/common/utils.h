@@ -8,7 +8,10 @@
 
 void* pmalloc(size_t sz);
 void pfree(void *p);
-
+#define PSEGMENT_RESERVED_REGION_START 0x0000100000000000
+#define PSEGMENT_RESERVED_REGION_SIZE (2UL * 1024 * 1024 * 1024)
+#define PSEGMENT_RESERVED_REGION_END     (PSEGMENT_RESERVED_REGION_START +    \
+                                          PSEGMENT_RESERVED_REGION_SIZE)
 
 namespace storage {
 

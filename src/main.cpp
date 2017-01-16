@@ -297,6 +297,7 @@ int main(int argc, char **argv) {
 	die();
   }
   #endif
+  pthread_spin_init(&tot_epoch_lock, PTHREAD_PROCESS_SHARED);
 
   size_t pmp_size = PMSIZE;
   if ((storage::pmp = storage::pmemalloc_init(path, pmp_size)) == NULL)
@@ -330,12 +331,14 @@ int main(int argc, char **argv) {
   pthread_spin_unlock(&tbuf_lock);
   pthread_spin_destroy(&tbuf_lock);
   #endif
+  pthread_spin_destroy(&tot_epoch_lock);
 
   cc.eval(state);
 
   //std::cerr<<"STATS : "<<std::endl;
   //std::cerr<<"PCOMMIT : "<<storage::pcommit<<std::endl;
   //std::cerr<<"CLFLUSH : "<<storage::clflush<<std::endl;
+  std::cerr << "TOTAL EPOCHS : " << get_tot_epoch_count();
 
   return 0;
 }

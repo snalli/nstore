@@ -112,8 +112,8 @@ struct clump {
 /* 64B cache line size */
 #define ALIGN 64
 /* To match Mnemosyne and reuse trace processing tools */
-#define LIBPM 0x0000100000000000
-#define PMSIZE (2UL * 1024 * 1024 * 1024)
+#define LIBPM PSEGMENT_RESERVED_REGION_START
+#define PMSIZE PSEGMENT_RESERVED_REGION_SIZE
 
 static inline void *
 pmem_map(int fd, size_t len) {
@@ -152,7 +152,7 @@ static inline void __pmem_persist(void *addr, size_t len, int flags) {
   		for (; uptr < end; uptr += ALIGN) {				\
 		        __asm__ __volatile__ ("clflushopt %0" : : 		\
 							  "m"(((void*)uptr)));  \
-			PM_FLUSHOPT(((void*)uptr), ALIGN, ALIGN);		\
+			/*PM_FLUSHOPT(((void*)uptr), ALIGN, ALIGN);*/		\
   		}								\
 	})
 #define pmem_persist(addr, len, flags)						\

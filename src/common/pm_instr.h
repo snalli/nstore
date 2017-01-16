@@ -40,13 +40,19 @@ extern __thread unsigned long long tbuf_ptr;
 
 extern char *tbuf;
 extern unsigned long long tbuf_sz;
-extern pthread_spinlock_t tbuf_lock;
+extern pthread_spinlock_t tbuf_lock, tot_epoch_lock;
 extern int mtm_enable_trace;
 extern int mtm_debug_buffer;
 extern int tracing_on, trace_marker;
 extern struct timeval glb_time;
 extern unsigned long long start_buf_drain, end_buf_drain, buf_drain_period;
 extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
+extern unsigned long long tot_epoch;
+
+extern __thread int reg_write;
+extern __thread unsigned long long n_epoch;
+extern void __pm_trace_print(int,  ...);
+extern unsigned long long get_tot_epoch_count(void);
 
 
 #ifdef _ENABLE_TRACE
@@ -119,13 +125,19 @@ extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
     }
 #else
 /* No tracing */
-#define pm_trace_print(args ...)		{;}
+#define TENTRY_ID (int)0
+#define pm_trace_print(format, args ...)					\
+{										\
+        __pm_trace_print(0, args);                                         	\
+}
 #endif
 
 #define PM_TRACE                        pm_trace_print
 
 /* Cacheable PM write */
 #define PM_WRT_MARKER                   "PM_W"
+#define PM_DWRT_MARKER                  "PM_DW"
+#define PM_DI_MARKER                    "PM_DI"
 
 /* Cacheable PM read */
 #define PM_RD_MARKER                    "PM_R"
@@ -248,6 +260,18 @@ extern unsigned long long glb_tv_sec, glb_tv_usec, glb_start_time;
             PM_TRACE("%d:%llu:%s:%p:%lu:%s:%d\n",    	\
 			TENTRY_ID,		    	\
                         PM_WRT_MARKER,              	\
+                        (pm_dst),                   	\
+                        (unsigned long)sz,          	\
+                        LOC1,                   	\
+                        LOC2);                  	\
+            memcpy(pm_dst, src, sz);                	\
+    })              
+
+#define PM_DMEMCPY(pm_dst, src, sz)                  	\
+    ({                                              	\
+            PM_TRACE("%d:%llu:%s:%p:%lu:%s:%d\n",    	\
+			TENTRY_ID,		    	\
+                        PM_DWRT_MARKER,              	\
                         (pm_dst),                   	\
                         (unsigned long)sz,          	\
                         LOC1,                   	\

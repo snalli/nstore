@@ -103,7 +103,7 @@ class record {
       case field_type::DOUBLE:
       case field_type::VARCHAR:
 	// data copy and not pointer copy. Going by the variable len field.
-	PM_MEMCPY((&(data[offset])), (&(rec_ptr->data[offset])), (len));
+	PM_DMEMCPY((&(data[offset])), (&(rec_ptr->data[offset])), (len));
         break;
 
       default:
@@ -114,12 +114,12 @@ class record {
 
   void set_int(const int field_id, int ival) {
     //assert(sptr->columns[field_id].type == field_type::INTEGER);
-    PM_MEMCPY((&(data[sptr->columns[field_id].offset])), (&ival), (sizeof(int)));
+    PM_DMEMCPY((&(data[sptr->columns[field_id].offset])), (&ival), (sizeof(int)));
   }
 
   void set_double(const int field_id, double dval) {
     //assert(sptr->columns[field_id].type == field_type::DOUBLE);
-    PM_MEMCPY((&(data[sptr->columns[field_id].offset])), (&dval), (sizeof(double)));
+    PM_DMEMCPY((&(data[sptr->columns[field_id].offset])), (&dval), (sizeof(double)));
   }
 
   void set_varchar(const int field_id, std::string vc_str) {
@@ -128,7 +128,7 @@ class record {
 	if(is_persistent) {
 		vc = (char*) pmalloc((vc_str.size()+1)*sizeof(char));
 	    	PM_STRCPY((vc), (vc_str.c_str()), (vc_str.size()+1)); // if dst is not null terminated -> trouble
-	    	PM_MEMCPY((&(data[sptr->columns[field_id].offset])), (&vc), (sizeof(char*)));
+	    	PM_DMEMCPY((&(data[sptr->columns[field_id].offset])), (&vc), (sizeof(char*)));
 	} else {
 		vc = (char*) malloc((vc_str.size()+1)*sizeof(char));
 	    	strcpy((vc), (vc_str.c_str())); // if dst is not null terminated -> trouble
@@ -142,7 +142,7 @@ class record {
 
   void set_pointer(const int field_id, void* pval) {
     //assert(sptr->columns[field_id].type == field_type::VARCHAR);
-    PM_MEMCPY((&(data[sptr->columns[field_id].offset])), (&pval), (sizeof(void*)));
+    PM_DMEMCPY((&(data[sptr->columns[field_id].offset])), (&pval), (sizeof(void*)));
   }
 
 	// Only called on the DB load path and we need pmalloc on it
