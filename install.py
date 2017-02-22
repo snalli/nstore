@@ -56,7 +56,7 @@ def main(argv):
 
     if args.build == True:
         print "Building " + workload
-        buildCmd = "make"
+        buildCmd = "make -j8"
         runCmd(buildCmd, "No rule", "Couldn't build %s" % (workload,))
 
 if __name__ == "__main__":

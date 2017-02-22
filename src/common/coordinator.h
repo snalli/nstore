@@ -77,7 +77,10 @@ class coordinator {
       loaders[i].join();
 
     if(conf.is_trace_enabled) {
-	    write(tracing_on, "1", 1);
+	    int ret = write(tracing_on, "1", 1);
+        if(ret == 1) {
+            printf("Tracing Enabled\n");
+        }
 	    mtm_enable_trace = conf.is_trace_enabled;
     }
     std::cerr << "EXECUTING..." << std::endl;

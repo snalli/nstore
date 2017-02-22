@@ -130,25 +130,25 @@ namespace storage {
 
 	/* Turn off tracing from previous sessions */
 	debug_fd = open("/sys/kernel/debug/tracing/tracing_on", O_WRONLY);
-	if(debug_fd != -1){ write(debug_fd, "0", 1); }
+	if(debug_fd != -1){ ret = write(debug_fd, "0", 1); }
 	else{ ret = 1; goto fail; }
 	close(debug_fd);
 
 	/* Emtpy trace buffer */
 	debug_fd = open("/sys/kernel/debug/tracing/current_tracer", O_WRONLY);
-	if(debug_fd != -1){ write(debug_fd, "nop", 3); }
+	if(debug_fd != -1){ ret = write(debug_fd, "nop", 3); }
 	else{ ret = 2; goto fail; }
 	close(debug_fd);
 
 	/* Pick a routine that EXISTS but will never be called, VVV IMP !*/
 	debug_fd = open("/sys/kernel/debug/tracing/set_ftrace_filter", O_WRONLY);
-	if(debug_fd != -1){ write(debug_fd, "pmfs_mount", 10); }
+	if(debug_fd != -1){ ret = write(debug_fd, "pmfs_mount", 10); }
 	else{ ret = 3; goto fail; }
 	close(debug_fd);
 
 	/* Enable function tracer */
 	debug_fd = open("/sys/kernel/debug/tracing/current_tracer", O_WRONLY);
-	if(debug_fd != -1){ write(debug_fd, "function", 8); }
+	if(debug_fd != -1){ ret = write(debug_fd, "function", 8); }
 	else{ ret = 4; goto fail; }
 	close(debug_fd);
 
@@ -279,8 +279,7 @@ fail:
 
 int main(int argc, char **argv) {
   /* Get to DAX FS */
-  const char* path = "/mnt/pmfs/nstore/zfile";
-  //const char* path = "/home/snalli/Desktop/zfile";
+  const char* path = "/dev/shm/zfile";
 
   #ifdef _ENABLE_TRACE 
   gettimeofday(&glb_time, NULL);
