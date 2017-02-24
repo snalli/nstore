@@ -3,7 +3,14 @@
 ## Storage architectures
 
 Evaluation of different storage architectures in database systems designed for non-volatile memory (NVM).
+We thank Joy Arulraj for allowing us to use this code.
+For more information on nstore, please read the original paper-
 
+Joy Arulraj, Andrew Pavlo, and Subramanya R. Dulloor. 2015. Let's Talk About
+Storage & Recovery Methods for Non-Volatile Memory Database Systems. In
+Proceedings of the 2015 ACM SIGMOD International Conference on Management of
+Data (SIGMOD '15). ACM, New York, NY, USA, 707-722. DOI:
+http://dx.doi.org/10.1145/2723372.2749441
 
 ## Dependencies
 
