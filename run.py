@@ -36,7 +36,7 @@ def main(argv):
     Parses the arguments and cleans and/or builds the specified
     workloads of the whisper suite
     """
-    parser = argparse.ArgumentParser(description='Builds echo from the whisper suite.')
+    parser = argparse.ArgumentParser(description='Runs nstore workloads from the whisper suite.')
     parser.add_argument('benchmarks', metavar='workload', type=str, nargs=1,
                 help='workloads to be run: tpcc/ycsb')
     parser.add_argument('--sim_size', dest='sim_size', action='store', 
