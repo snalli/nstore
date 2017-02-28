@@ -53,6 +53,8 @@ def main(argv):
     os.chdir('src/')
     if args.sim_size in sim_sizes:
         runCmd(sim_sizes[args.sim_size] + variant, "Error", "Simulation failed")    
+    else:
+        print "Simulation size: " + str(args.sim_size) + " not found for workload:" + str(args.benchmarks[0])
     os.chdir('../')
 
 if __name__ == "__main__":
