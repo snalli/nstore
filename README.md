@@ -1,10 +1,8 @@
 # N-Store 
 
-## Storage architectures
+An efficient database systems designed for non-volatile memory (NVM).
 
-Evaluation of different storage architectures in database systems designed for non-volatile memory (NVM).
-We thank Joy Arulraj for allowing us to use this code.
-For more information on nstore, please read the original paper-
+For details, please read the original paper-
 
 ####Let's Talk About Storage & Recovery Methods for Non-Volatile Memory Database Systems.
 
@@ -65,7 +63,7 @@ Data (SIGMOD '15)
 
 Nstore will create a persistent heap in /dev/shm defined by the macro PERSISTENT_HEAP.
 
-To collect the trace of accesses to persistent memory,
+To collect the trace of accesses to NVM,
 make sure you have debugfs mounted in Linux.
 
 # To run with tracing enabled :
