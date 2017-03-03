@@ -20,9 +20,9 @@ Data (SIGMOD '15)
 ```
     $./bootstrap
     $./configure
-    $./build
     
     $ cd src/
+    $./build
     $ ./run -h                                  [For help]
 
 ```
