@@ -10,12 +10,12 @@ Joy Arulraj, Andrew Pavlo, and Subramanya R. Dulloor. 2015.
 In Proceedings of the 2015 ACM SIGMOD International Conference on Management of
 Data (SIGMOD '15)
 
-## Dependencies
+# Dependencies:
 
 - **g++ 4.7+** 
 - **autoconf** (`apt-get install autoconf libtool`) 
 
-## To build:
+# To build:
         
 ```
     $./bootstrap
