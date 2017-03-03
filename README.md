@@ -25,32 +25,6 @@ Data (SIGMOD '15)
     $ cd src/
     $ ./run -h                                          [For help]
 
-   -h --help              :  Print help message 
-   -x --num-txns          :  Number of transactions 
-   -k --num-keys          :  Number of keys 
-   -e --num-executors     :  Number of executors 
-   -f --fs-path           :  Path for FS 
-   -g --gc-interval       :  Group commit interval 
-   -a --wal-enable        :  WAL enable (traditional) 
-   -w --opt-wal-enable    :  OPT WAL enable 
-   -s --sp-enable         :  SP enable (traditional) 
-   -c --opt-sp-enable     :  OPT SP enable 
-   -m --lsm-enable        :  LSM enable (traditional) 
-   -l --opt-lsm-enable    :  OPT LSM enable 
-   -y --ycsb              :  YCSB benchmark 
-   -t --tpcc              :  TPCC benchmark 
-   -d --test              :  TEST benchmark 
-   -p --per-writes        :  Percent of writes 
-   -u --ycsb-update-one   :  Update one field 
-   -q --ycsb_zipf_skew    :  Zipf Skew 
-   -z --storage_stats     :  Collect storage stats 
-   -o --tpcc_stock-level  :  TPCC stock level only 
-   -r --recovery          :  Recovery mode 
-   -b --load-batch-size   :  Load batch size 
-   -j --test_b_mode       :  Test benchmark mode 
-   -i --multi-executors   :  Multiple executors 
-   -n --enable-trace      :  E[n]able trace [default:0] (needs sudo)
-
 ```
 
 # To run :
