@@ -36,6 +36,7 @@ Data (SIGMOD '15)
 ~~~
 
 Nstore will create a persistent heap in /dev/shm defined by the macro PERSISTENT_HEAP.
+Ensure that you have at least 1.00 GB of space for the heap.
 
 To collect the trace of accesses to NVM,
 make sure you have debugfs mounted in Linux.
