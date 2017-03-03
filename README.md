@@ -23,7 +23,7 @@ Data (SIGMOD '15)
     $./build
     
     $ cd src/
-    $ ./run -h                                          [For help]
+    $ ./run -h                                  [For help]
 
 ```
 
@@ -31,8 +31,8 @@ Data (SIGMOD '15)
 
 ~~~
     $ cd src/
-    $ ./run --ycsb --small                      [can pass --med or --large for bigger workloads]
-    $ ./run --tpcc --small                      [can pass --med or --large for bigger workloads]
+    $ ./run --small --ycsb                      [can pass --med or --large for bigger workloads]
+    $ ./run --small --tpcc                      [can pass --med or --large for bigger workloads]
 ~~~
 
 Nstore will create a persistent heap in /dev/shm defined by the macro PERSISTENT_HEAP.
@@ -52,5 +52,5 @@ make sure you have debugfs mounted in Linux.
     Go back to nstore/:
     
     $ cd src/
-    $ sudo ./run --ycsb --small --trace         [Need to be root to collect trace]
+    $ sudo ./run --small --ycsb --trace         [Need to be root to collect trace]
 ~~~
