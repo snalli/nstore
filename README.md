@@ -1,6 +1,6 @@
 # N-Store 
 
-An efficient database systems designed for non-volatile memory (NVM).
+An efficient database system designed for non-volatile memory (NVM).
 
 For details, please read the original paper-
 
