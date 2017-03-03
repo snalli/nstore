@@ -1,74 +1,56 @@
 # N-Store 
 
-## Storage architectures
+An efficient database system designed for non-volatile memory (NVM).
 
-Evaluation of different storage architectures in database systems designed for non-volatile memory (NVM).
-We thank Joy Arulraj for allowing us to use this code.
-For more information on nstore, please read the original paper-
+For details, please read the original paper-
 
-Joy Arulraj, Andrew Pavlo, and Subramanya R. Dulloor. 2015. Let's Talk About
-Storage & Recovery Methods for Non-Volatile Memory Database Systems. In
-Proceedings of the 2015 ACM SIGMOD International Conference on Management of
-Data (SIGMOD '15). ACM, New York, NY, USA, 707-722. DOI:
-http://dx.doi.org/10.1145/2723372.2749441
+####Let's Talk About Storage & Recovery Methods for Non-Volatile Memory Database Systems.
+
+Joy Arulraj, Andrew Pavlo, and Subramanya R. Dulloor. 2015.  
+In Proceedings of the 2015 ACM SIGMOD International Conference on Management of
+Data (SIGMOD '15)
 
 ## Dependencies
 
 - **g++ 4.7+** 
 - **autoconf** (`apt-get install autoconf libtool`) 
 
-
-## Easy install and run
-Use our install and run scripts to make your lives easier!
-
-We have provided a simple install.py which handles installation and cleans of
-the individual workloads. To clean and/or build nstore, simply do:
-
-    python install.py [--build] [--clean]
-
-For running either ycsb or tpcc workload with nstore,
-    run.py [-h] [--sim_size SIM_SIZE] [ycsb/tpcc]
-
-Supported simulation sizes: test, small, medium, large
-
-## Manual Setup
+## To build:
         
 ```
-    ./bootstrap
-    ./configure
-    make
+    $./bootstrap
+    $./configure
+    $./build
+    
+    $ cd src/
+    $ ./run -h                                          [For help]
+
 ```
 
-## Test
+# To run :
 
-```
-./src/n-store -h 
-```
+~~~
+    $ cd src/
+    $ ./run --ycsb --small                      [can pass --med or --large for bigger workloads]
+    $ ./run --tpcc --small                      [can pass --med or --large for bigger workloads]
+~~~
 
-##Command line parameters for running nstore
-.Command line options : nstore <options> 
-   -h --help              :  Print help message 
-   -x --num-txns          :  Number of transactions 
-   -k --num-keys          :  Number of keys 
-   -e --num-executors     :  Number of executors 
-   -f --fs-path           :  Path for FS 
-   -g --gc-interval       :  Group commit interval 
-   -a --wal-enable        :  WAL enable (traditional) 
-   -w --opt-wal-enable    :  OPT WAL enable 
-   -s --sp-enable         :  SP enable (traditional) 
-   -c --opt-sp-enable     :  OPT SP enable 
-   -m --lsm-enable        :  LSM enable (traditional) 
-   -l --opt-lsm-enable    :  OPT LSM enable 
-   -y --ycsb              :  YCSB benchmark 
-   -t --tpcc              :  TPCC benchmark 
-   -d --test              :  TEST benchmark 
-   -p --per-writes        :  Percent of writes 
-   -u --ycsb-update-one   :  Update one field 
-   -q --ycsb_zipf_skew    :  Zipf Skew 
-   -z --storage_stats     :  Collect storage stats 
-   -o --tpcc_stock-level  :  TPCC stock level only 
-   -r --recovery          :  Recovery mode 
-   -b --load-batch-size   :  Load batch size 
-   -j --test_b_mode       :  Test benchmark mode 
-   -i --multi-executors   :  Multiple executors 
-   -n --enable-trace      :  E[n]able trace [default:0] (needs sudo)
+Nstore will create a persistent heap in /dev/shm defined by the macro PERSISTENT_HEAP.
+
+To collect the trace of accesses to NVM,
+make sure you have debugfs mounted in Linux.
+
+# To run with tracing enabled :
+~~~
+    $ mount | grep debugfs
+    debugfs on /sys/kernel/debug type debugfs (rw,relatime)
+    
+    $ sudo cd /sys/kernel/debug
+    $ sudo echo 128000 > buffer_size_kb         [128MB. Allocate enough buffer to hold traces]
+    $ cat trace_pipe                            [Redirect output of pipe to any file for storage]
+    
+    Go back to nstore/:
+    
+    $ cd src/
+    $ sudo ./run --ycsb --small --trace         [Need to be root to collect trace]
+~~~
