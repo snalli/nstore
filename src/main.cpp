@@ -161,7 +161,7 @@ namespace storage {
         std::cerr << "mtm_enable_trace: " << state.is_trace_enabled << std::endl;
         break;
 fail:
-	fprintf(stderr, "failed to open trace mechanism, debug and waste your life !\n");
+	fprintf(stderr, "failed to open trace mechanism. need to be root.\n");
 	exit(ret);
 
       case 'f':
