@@ -3,7 +3,7 @@ action=$1
 var=$2
 trace=$3
 
-bin="./nstore"
+bin="./src/nstore"
 
 if [ "$action" == "-h" ] 
 then
@@ -47,3 +47,13 @@ then
 else
 	echo "Invalid workload $var"
 fi
+
+#!/bin/bash
+#./src/nstore -x20000 -k10000 -e1 -w -y -p0.5 -n1
+#./src/nstore -x20000 -k10000 -e2 -w -y -p0.5 -i
+#./src/nstore -x20000 -k10000 -e4 -w -y -p0.5 -i
+#./src/nstore -x20000 -k10000 -e4 -w -y -p0.8 -i
+
+# On skylake
+#./src/nstore -x400000 -k40000 -w -t -p0.4 -e4 -n1 = tpcc-sl00
+#./src/nstore -x8000000 -k100000 -w -y -p0.8 -e4 -n1 = ycsb-sl01
