@@ -14,6 +14,7 @@ fi
 if [ "$trace" == "--trace" ]
 then
 	trace="-n1"
+	sudo="sudo"
 else
 	trace="-n0"
 fi
@@ -23,26 +24,26 @@ then
 
 	if [ "$action" == "--small" ]
 	then
-		$time $bin -x1000 -k10000 -w -p0.5 -e2 $trace $var
+		$sudo $time $bin -x1000 -k10000 -w -p0.5 -e2 $trace $var
 	elif [ "$action" == "--med" ]
 	then
-		$time $bin -x20000 -k50000 -w -p0.5 -e2 $trace $var
+		$sudo $time $bin -x20000 -k50000 -w -p0.5 -e2 $trace $var
 	elif [ "$action" == "--large" ]
 	then
-		$time $bin -x40000 -k100000 -w -p0.8 -e4 $trace $var
+		$sudo $time $bin -x40000 -k100000 -w -p0.8 -e4 $trace $var
 	fi
 
 elif [ "$var" == "--tpcc" ]
 then
 	if [ "$action" == "--small" ]
 	then
-		$time $bin -x10000 -k1000 -w -p0.2 -e2 $trace $var
+		$sudo $time $bin -x10000 -k1000 -w -p0.2 -e2 $trace $var
 	elif [ "$action" == "--med" ]
 	then
-		$time $bin -x20000 -k2000 -w -p0.2 -e2 $trace $var
+		$sudo $time $bin -x20000 -k2000 -w -p0.2 -e2 $trace $var
 	elif [ "$action" == "--large" ]
 	then
-		$time $bin -x40000 -k4000 -w -p0.4 -e4 $trace $var
+		$sudo $time $bin -x40000 -k4000 -w -p0.4 -e4 $trace $var
 	fi
 else
 	echo "Invalid workload $var"
