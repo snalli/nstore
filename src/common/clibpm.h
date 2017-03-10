@@ -150,7 +150,7 @@ static inline void __pmem_persist(void *addr, size_t len, int flags) {
   		uintptr_t uptr = (uintptr_t) addr & ~(ALIGN - 1);		\
   		uintptr_t end = (uintptr_t) addr + len;				\
   		for (; uptr < end; uptr += ALIGN) {				\
-		        __asm__ __volatile__ ("clflushopt %0" : : 		\
+		        __asm__ __volatile__ ("clflush %0" : : 		\
 							  "m"(((void*)uptr)));  \
 			/*PM_FLUSHOPT(((void*)uptr), ALIGN, ALIGN);*/		\
   		}								\

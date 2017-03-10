@@ -120,7 +120,7 @@ extern unsigned long long get_tot_epoch_count(void);
 	if(mtm_enable_trace) {							\
        		sprintf(tstr, format, args);    				\
 		tsz = strlen(tstr);						\
-		write(trace_marker, tstr+4, tsz-4);				\
+		assert (0 < write(trace_marker, tstr+4, tsz-4));		\
 	}									\
     }
 #else
