@@ -270,6 +270,7 @@ void opt_wal_engine::txn_end(__attribute__((unused)) bool commit) {
     delete ptr;
   pm_log->clear(); // This gives non-volatile accesses
   PM_FENCE();
+  __builtin_ia32_sfence();
   PM_END_TX();
 
 }
