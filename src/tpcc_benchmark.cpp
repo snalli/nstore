@@ -1545,7 +1545,7 @@ void tpcc_benchmark::do_new_order(engine* ee, bool finish) {
                                 empty);
 
   st = statement(txn_id, operation_type::Select, CUSTOMER_TABLE_ID, rec_ptr, 0,
-                 customer_do_new_order_schema);
+                 customer_table_schema);
 
   TIMER(customer_str = ee->select(st))
 
